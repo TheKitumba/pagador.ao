@@ -30,7 +30,7 @@
 
 ## 🧑‍💻 Tecnologias Utilizadas
 
-- **React + Vite**
+- **Next.js**
 - **Tailwind CSS**
 - **Lucide Icons**
 - **React Query / Zustand (para gerenciamento de estado)**
