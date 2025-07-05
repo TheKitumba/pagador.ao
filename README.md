@@ -6,11 +6,11 @@
 
 ### Light Mode
 
-![Light Mode Preview](./screenshots/light-mode.png)
+![Light Mode Preview](./public/screenshots/light-mode.png)
 
 ### Dark Mode
 
-![Dark Mode Preview](./screenshots/dark-mode.png)
+![Dark Mode Preview](./public/screenshots/dark-mode.png)
 
 ---
 
