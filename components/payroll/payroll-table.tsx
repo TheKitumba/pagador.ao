@@ -1,22 +1,50 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Checkbox } from "@/components/ui/checkbox"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { StatusBadge } from "@/components/ui/status-badge"
-import { formatCurrency, formatDateRange } from "@/lib/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { StatusBadge } from "@/components/ui/status-badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { formatCurrency, formatDateRange } from "@/lib/utils";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  MoreHorizontal,
+  Search,
+} from "lucide-react";
+import { useState } from "react";
 
 const payrollData = [
   {
     id: "PR-202401",
     amount: 120000,
-    employee: { name: "João Silva", avatar: "/placeholder.svg?height=32&width=32", initials: "JS" },
+    employee: {
+      name: "João Silva",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "JS",
+    },
     period: { start: new Date(2024, 1, 1), end: new Date(2024, 1, 15) },
     method: "Transferência Bancária",
     processedDate: new Date(2024, 1, 15),
@@ -25,7 +53,11 @@ const payrollData = [
   {
     id: "PR-202402",
     amount: 115000,
-    employee: { name: "Maria Santos", avatar: "/placeholder.svg?height=32&width=32", initials: "MS" },
+    employee: {
+      name: "Maria Santos",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "MS",
+    },
     period: { start: new Date(2024, 0, 16), end: new Date(2024, 0, 31) },
     method: "Transferência Bancária",
     processedDate: null,
@@ -34,7 +66,11 @@ const payrollData = [
   {
     id: "PR-202403",
     amount: 118500,
-    employee: { name: "Alex Johnson", avatar: "/placeholder.svg?height=32&width=32", initials: "AJ" },
+    employee: {
+      name: "Alex Johnson",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "AJ",
+    },
     period: { start: new Date(2024, 0, 1), end: new Date(2024, 0, 15) },
     method: "Depósito Direto",
     processedDate: new Date(2024, 0, 15),
@@ -43,7 +79,11 @@ const payrollData = [
   {
     id: "PR-202404",
     amount: 110500,
-    employee: { name: "Emily Davis", avatar: "/placeholder.svg?height=32&width=32", initials: "ED" },
+    employee: {
+      name: "Emily Davis",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "ED",
+    },
     period: { start: new Date(2023, 11, 16), end: new Date(2023, 11, 31) },
     method: "Depósito Direto",
     processedDate: new Date(2023, 11, 31),
@@ -52,7 +92,11 @@ const payrollData = [
   {
     id: "PR-202405",
     amount: 120000,
-    employee: { name: "Michael Brown", avatar: "/placeholder.svg?height=32&width=32", initials: "MB" },
+    employee: {
+      name: "Michael Brown",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "MB",
+    },
     period: { start: new Date(2024, 1, 1), end: new Date(2024, 1, 15) },
     method: "Transferência Bancária",
     processedDate: new Date(2024, 1, 15),
@@ -61,7 +105,11 @@ const payrollData = [
   {
     id: "PR-202406",
     amount: 115000,
-    employee: { name: "Sarah Wilson", avatar: "/placeholder.svg?height=32&width=32", initials: "SW" },
+    employee: {
+      name: "Sarah Wilson",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "SW",
+    },
     period: { start: new Date(2024, 0, 16), end: new Date(2024, 0, 31) },
     method: "Transferência por Fio",
     processedDate: new Date(2024, 0, 31),
@@ -70,7 +118,11 @@ const payrollData = [
   {
     id: "PR-202407",
     amount: 118500,
-    employee: { name: "Daniel Lee", avatar: "/placeholder.svg?height=32&width=32", initials: "DL" },
+    employee: {
+      name: "Daniel Lee",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "DL",
+    },
     period: { start: new Date(2024, 0, 1), end: new Date(2024, 0, 15) },
     method: "Transferência por Fio",
     processedDate: null,
@@ -79,53 +131,171 @@ const payrollData = [
   {
     id: "PR-202408",
     amount: 110500,
-    employee: { name: "Olivia Clark", avatar: "/placeholder.svg?height=32&width=32", initials: "OC" },
+    employee: {
+      name: "Olivia Clark",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "OC",
+    },
     period: { start: new Date(2023, 11, 16), end: new Date(2023, 11, 31) },
     method: "Transferência Bancária",
     processedDate: new Date(2023, 11, 31),
     status: "received" as const,
   },
-]
+  {
+    id: "PR-202501",
+    amount: 120000,
+    employee: {
+      name: "João Silva",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "JS",
+    },
+    period: { start: new Date(2024, 1, 1), end: new Date(2024, 1, 15) },
+    method: "Transferência Bancária",
+    processedDate: new Date(2024, 1, 15),
+    status: "received" as const,
+  },
+  {
+    id: "PR-202502",
+    amount: 115000,
+    employee: {
+      name: "Maria Santos",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "MS",
+    },
+    period: { start: new Date(2024, 0, 16), end: new Date(2024, 0, 31) },
+    method: "Transferência Bancária",
+    processedDate: null,
+    status: "pending" as const,
+  },
+  {
+    id: "PR-202503",
+    amount: 118500,
+    employee: {
+      name: "Alex Johnson",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "AJ",
+    },
+    period: { start: new Date(2024, 0, 1), end: new Date(2024, 0, 15) },
+    method: "Depósito Direto",
+    processedDate: new Date(2024, 0, 15),
+    status: "processed" as const,
+  },
+  {
+    id: "PR-202504",
+    amount: 110500,
+    employee: {
+      name: "Emily Davis",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "ED",
+    },
+    period: { start: new Date(2023, 11, 16), end: new Date(2023, 11, 31) },
+    method: "Depósito Direto",
+    processedDate: new Date(2023, 11, 31),
+    status: "processed" as const,
+  },
+  {
+    id: "PR-202505",
+    amount: 120000,
+    employee: {
+      name: "Michael Brown",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "MB",
+    },
+    period: { start: new Date(2024, 1, 1), end: new Date(2024, 1, 15) },
+    method: "Transferência Bancária",
+    processedDate: new Date(2024, 1, 15),
+    status: "received" as const,
+  },
+  {
+    id: "PR-202506",
+    amount: 115000,
+    employee: {
+      name: "Sarah Wilson",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "SW",
+    },
+    period: { start: new Date(2024, 0, 16), end: new Date(2024, 0, 31) },
+    method: "Transferência por Fio",
+    processedDate: new Date(2024, 0, 31),
+    status: "failed" as const,
+  },
+  {
+    id: "PR-202507",
+    amount: 118500,
+    employee: {
+      name: "Daniel Lee",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "DL",
+    },
+    period: { start: new Date(2024, 0, 1), end: new Date(2024, 0, 15) },
+    method: "Transferência por Fio",
+    processedDate: null,
+    status: "pending" as const,
+  },
+  {
+    id: "PR-202508",
+    amount: 110500,
+    employee: {
+      name: "Olivia Clark",
+      avatar: "/placeholder.svg?height=32&width=32",
+      initials: "OC",
+    },
+    period: { start: new Date(2023, 11, 16), end: new Date(2023, 11, 31) },
+    method: "Transferência Bancária",
+    processedDate: new Date(2023, 11, 31),
+    status: "received" as const,
+  },
+];
 
 const statusLabels = {
   received: "Recebido",
   pending: "Pendente",
   processed: "Processado",
   failed: "Falhou",
-}
+};
 
 export function PayrollTable() {
-  const [selectedRows, setSelectedRows] = useState<string[]>([])
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 8
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   const filteredData = payrollData.filter((item) => {
     const matchesSearch =
       item.employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.id.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = statusFilter === "all" || item.status === statusFilter
-    return matchesSearch && matchesStatus
-  })
+      item.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || item.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage)
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = filteredData.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   const toggleRowSelection = (id: string) => {
-    setSelectedRows((prev) => (prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]))
-  }
+    setSelectedRows((prev) =>
+      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
+    );
+  };
 
   const toggleAllRows = () => {
-    setSelectedRows(selectedRows.length === paginatedData.length ? [] : paginatedData.map((item) => item.id))
-  }
+    setSelectedRows(
+      selectedRows.length === paginatedData.length
+        ? []
+        : paginatedData.map((item) => item.id)
+    );
+  };
 
   return (
     <div className="space-y-4">
       {/* Filters */}
       <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Pesquisar folha de pagamento..."
@@ -135,6 +305,24 @@ export function PayrollTable() {
           />
         </div>
 
+        <Select>
+          <SelectTrigger className="w-40">
+            <Filter className="h-4 w-4 mr-2" />
+            <SelectValue placeholder="Todos anos" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos anos</SelectItem>
+            {Array.from(
+              new Set(
+                payrollData.map((item) => item.period.start.getFullYear())
+              )
+            ).map((year) => (
+              <SelectItem key={year} value={year.toString()}>
+                {year}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-48">
             <Filter className="h-4 w-4 mr-2" />
@@ -162,17 +350,22 @@ export function PayrollTable() {
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-12">
                 <Checkbox
-                  checked={selectedRows.length === paginatedData.length && paginatedData.length > 0}
+                  checked={
+                    selectedRows.length === paginatedData.length &&
+                    paginatedData.length > 0
+                  }
                   onCheckedChange={toggleAllRows}
                 />
               </TableHead>
-              <TableHead>ID da Folha</TableHead>
-              <TableHead>Valor Total</TableHead>
-              <TableHead>Funcionários</TableHead>
-              <TableHead>Período de Pagamento</TableHead>
-              <TableHead>Método de Pagamento</TableHead>
-              <TableHead>Data Processada</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead className="text-nowrap">ID da Folha</TableHead>
+              <TableHead className="text-nowrap">Valor Total</TableHead>
+              <TableHead className="text-nowrap">Funcionários</TableHead>
+              <TableHead className="text-nowrap">
+                Período de Pagamento
+              </TableHead>
+              <TableHead className="text-nowrap">Método de Pagamento</TableHead>
+              <TableHead className="text-nowrap">Data Processada</TableHead>
+              <TableHead className="text-nowrap">Status</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
@@ -190,19 +383,29 @@ export function PayrollTable() {
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={item.employee.avatar || "/placeholder.svg"} />
+                      <AvatarImage
+                        src={item.employee.avatar || "/placeholder.svg"}
+                      />
                       <AvatarFallback>{item.employee.initials}</AvatarFallback>
                     </Avatar>
                     <span className="font-medium">{item.employee.name}</span>
                   </div>
                 </TableCell>
-                <TableCell>{formatDateRange(item.period.start, item.period.end)}</TableCell>
-                <TableCell className="text-muted-foreground">{item.method}</TableCell>
                 <TableCell>
-                  {item.processedDate ? formatDateRange(item.processedDate, item.processedDate) : "-"}
+                  {formatDateRange(item.period.start, item.period.end)}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {item.method}
                 </TableCell>
                 <TableCell>
-                  <StatusBadge status={item.status}>{statusLabels[item.status]}</StatusBadge>
+                  {item.processedDate
+                    ? formatDateRange(item.processedDate, item.processedDate)
+                    : "-"}
+                </TableCell>
+                <TableCell>
+                  <StatusBadge status={item.status}>
+                    {statusLabels[item.status]}
+                  </StatusBadge>
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
@@ -215,7 +418,9 @@ export function PayrollTable() {
                       <DropdownMenuItem>Ver detalhes</DropdownMenuItem>
                       <DropdownMenuItem>Editar</DropdownMenuItem>
                       <DropdownMenuItem>Reprocessar</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">Excluir</DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive">
+                        Excluir
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -228,7 +433,8 @@ export function PayrollTable() {
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Mostrando {startIndex + 1} a {Math.min(startIndex + itemsPerPage, filteredData.length)} de{" "}
+          Mostrando {startIndex + 1} a{" "}
+          {Math.min(startIndex + itemsPerPage, filteredData.length)} de{" "}
           {filteredData.length} entradas
         </div>
         <div className="flex items-center gap-2">
@@ -244,7 +450,7 @@ export function PayrollTable() {
 
           <div className="flex items-center gap-1">
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              const page = i + 1
+              const page = i + 1;
               return (
                 <Button
                   key={page}
@@ -255,12 +461,17 @@ export function PayrollTable() {
                 >
                   {page}
                 </Button>
-              )
+              );
             })}
             {totalPages > 5 && (
               <>
                 <span className="px-2 text-muted-foreground">...</span>
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(totalPages)} className="w-8 h-8 p-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(totalPages)}
+                  className="w-8 h-8 p-0"
+                >
                   {totalPages}
                 </Button>
               </>
@@ -270,7 +481,9 @@ export function PayrollTable() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
           >
             Próximo
@@ -279,5 +492,5 @@ export function PayrollTable() {
         </div>
       </div>
     </div>
-  )
+  );
 }
