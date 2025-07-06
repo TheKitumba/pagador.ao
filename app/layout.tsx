@@ -1,6 +1,4 @@
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { ThemeProvider } from "@/hooks/use-theme";
+import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import type React from "react";
@@ -23,14 +21,7 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider defaultTheme="light">
-          <SidebarProvider>
-            <div className="flex w-full min-h-screen">
-              <AppSidebar />
-              <div className="flex-1 flex flex-col overflow-hidden">
-                {children}
-              </div>
-            </div>
-          </SidebarProvider>
+          <div>{children}</div>
         </ThemeProvider>
       </body>
     </html>

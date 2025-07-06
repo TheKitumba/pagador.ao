@@ -87,16 +87,16 @@ export function Header({
         <div className="flex items-center gap-2">
           <div className="flex -space-x-2">
             <Avatar className="h-8 w-8 border-2 border-background">
-              <AvatarImage src="/placeholder.svg?height=32&width=32" />
-              <AvatarFallback>JD</AvatarFallback>
+              <AvatarImage />
+              <AvatarFallback className="text-xs">JD</AvatarFallback>
             </Avatar>
             <Avatar className="h-8 w-8 border-2 border-background">
-              <AvatarImage src="/placeholder.svg?height=32&width=32" />
-              <AvatarFallback>JS</AvatarFallback>
+              <AvatarImage />
+              <AvatarFallback className="text-xs">JS</AvatarFallback>
             </Avatar>
             <Avatar className="h-8 w-8 border-2 border-background">
-              <AvatarImage src="/placeholder.svg?height=32&width=32" />
-              <AvatarFallback>AJ</AvatarFallback>
+              <AvatarImage />
+              <AvatarFallback className="text-xs">AJ</AvatarFallback>
             </Avatar>
           </div>
         </div>
