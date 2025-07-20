@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="pt" suppressHydrationWarning>
       <body className={ubuntu.className}>
         <ThemeProvider defaultTheme="light">
           <div>{children}</div>
