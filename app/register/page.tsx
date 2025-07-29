@@ -9,8 +9,8 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
       <Card className="w-full max-w-sm shadow-2xl py-8">
         <CardHeader>
-          <CardTitle>Entra na sua conta</CardTitle>
-          <CardDescription>Digite o seu email abaixo para fazer login na sua conta</CardDescription>
+          <CardTitle>Seja bem-vindo</CardTitle>
+          <CardDescription>Crie a sua conta e gerencie RH da sua empresa de forma simples</CardDescription>
         </CardHeader>
         <CardContent>
           <form>
@@ -22,9 +22,6 @@ export default function LoginPage() {
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <a href="#" className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
-                    Esqueceu sua senha?
-                  </a>
                 </div>
                 <Input id="password" type="password" required />
               </div>
@@ -33,11 +30,11 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="flex-col gap-2">
           <Button type="submit" className="w-full">
-            Entrar
+            Criar conta
           </Button>
-          <Link href={'/register'} className="w-full">
+          <Link href={'/login'} className="w-full">
             <Button variant="outline" className="w-full">
-              Criar conta
+              Entrar
             </Button>
           </Link>
         </CardFooter>
