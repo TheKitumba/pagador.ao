@@ -1,64 +1,64 @@
-"use client"
+'use client';
 
-import { Header } from "@/components/layout/header"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Search, Plus, Filter, MoreHorizontal, Mail, Phone } from "lucide-react"
-import { StatusBadge } from "@/components/ui/status-badge"
+import { Header } from '@/components/layout/header';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { Filter, Mail, MoreHorizontal, Phone, Plus, Search } from 'lucide-react';
 
 const employees = [
   {
     id: 1,
-    name: "João Silva",
-    email: "joao.silva@zenus.com",
-    phone: "+55 11 99999-9999",
-    position: "Desenvolvedor Senior",
-    department: "Tecnologia",
+    name: 'João Silva',
+    email: 'joao.silva@zenus.com',
+    phone: '+55 11 99999-9999',
+    position: 'Desenvolvedor Senior',
+    department: 'Tecnologia',
     salary: 12000,
-    status: "active",
-    avatar: "/placeholder.svg?height=40&width=40",
-    initials: "JS",
+    status: 'active',
+    avatar: '/placeholder.svg?height=40&width=40',
+    initials: 'JS',
   },
   {
     id: 2,
-    name: "Maria Santos",
-    email: "maria.santos@zenus.com",
-    phone: "+55 11 88888-8888",
-    position: "Gerente de Produto",
-    department: "Produto",
+    name: 'Maria Santos',
+    email: 'maria.santos@zenus.com',
+    phone: '+55 11 88888-8888',
+    position: 'Gerente de Produto',
+    department: 'Produto',
     salary: 15000,
-    status: "active",
-    avatar: "/placeholder.svg?height=40&width=40",
-    initials: "MS",
+    status: 'active',
+    avatar: '/placeholder.svg?height=40&width=40',
+    initials: 'MS',
   },
   {
     id: 3,
-    name: "Alex Johnson",
-    email: "alex.johnson@zenus.com",
-    phone: "+55 11 77777-7777",
-    position: "Designer UX/UI",
-    department: "Design",
+    name: 'Alex Johnson',
+    email: 'alex.johnson@zenus.com',
+    phone: '+55 11 77777-7777',
+    position: 'Designer UX/UI',
+    department: 'Design',
     salary: 9000,
-    status: "inactive",
-    avatar: "/placeholder.svg?height=40&width=40",
-    initials: "AJ",
+    status: 'inactive',
+    avatar: '/placeholder.svg?height=40&width=40',
+    initials: 'AJ',
   },
   {
     id: 4,
-    name: "Emily Davis",
-    email: "emily.davis@zenus.com",
-    phone: "+55 11 66666-6666",
-    position: "Analista de Marketing",
-    department: "Marketing",
+    name: 'Emily Davis',
+    email: 'emily.davis@zenus.com',
+    phone: '+55 11 66666-6666',
+    position: 'Analista de Marketing',
+    department: 'Marketing',
     salary: 7500,
-    status: "active",
-    avatar: "/placeholder.svg?height=40&width=40",
-    initials: "ED",
+    status: 'active',
+    avatar: '/placeholder.svg?height=40&width=40',
+    initials: 'ED',
   },
-]
+];
 
 export default function EmployeesPage() {
   return (
@@ -106,12 +106,11 @@ export default function EmployeesPage() {
           </Card>
         </div>
 
-        {/* Actions and Filters */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="relative">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 w-full  max-w-xl">
+            <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="Pesquisar funcionários..." className="w-64 pl-9" />
+              <Input placeholder="Pesquisar funcionários..." className="w-full pl-9" />
             </div>
             <Button variant="outline" className="gap-2 bg-transparent">
               <Filter className="h-4 w-4" />
@@ -124,7 +123,6 @@ export default function EmployeesPage() {
           </Button>
         </div>
 
-        {/* Employee Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {employees.map((employee) => (
             <Card key={employee.id} className="hover:shadow-md transition-shadow">
@@ -132,7 +130,7 @@ export default function EmployeesPage() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={employee.avatar || "/placeholder.svg"} />
+                      <AvatarImage src={employee.avatar || '/placeholder.svg'} />
                       <AvatarFallback>{employee.initials}</AvatarFallback>
                     </Avatar>
                     <div>
@@ -158,8 +156,8 @@ export default function EmployeesPage() {
 
                 <div className="flex items-center justify-between">
                   <Badge variant="secondary">{employee.department}</Badge>
-                  <StatusBadge status={employee.status === "active" ? "received" : "pending"}>
-                    {employee.status === "active" ? "Ativo" : "Inativo"}
+                  <StatusBadge status={employee.status === 'active' ? 'received' : 'pending'}>
+                    {employee.status === 'active' ? 'Ativo' : 'Inativo'}
                   </StatusBadge>
                 </div>
               </CardContent>
@@ -168,5 +166,5 @@ export default function EmployeesPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }
