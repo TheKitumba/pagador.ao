@@ -1,8 +1,8 @@
-# 💸 pagador.ao
+# pagador.ao
 
 **pagador.ao** é uma plataforma premium de gestão de folha de pagamento e RH, desenvolvida para simplificar e automatizar o processamento salarial de empresas angolanas. Construído com foco em experiência do usuário, responsividade e performance, o sistema segue os princípios do [Apple Human Interface Guidelines (HIG)](https://developer.apple.com/design/human-interface-guidelines/), suportando tanto modo claro quanto escuro.
 
-## 🖼️ Preview
+## Preview
 
 ### Light Mode
 
@@ -14,21 +14,21 @@
 
 ---
 
-## 🚀 Funcionalidades
+## Funcionalidades
 
-- 📊 **Dashboard Gerencial** com gráficos e indicadores de despesas salariais
-- 🧑‍💼 **Gestão de Funcionários**
-- 🗓️ **Calendário de Pagamentos e Presenças**
-- 💼 **Controle de Períodos e Métodos de Pagamento**
-- 💬 **Central de Mensagens e Notificações**
-- 📋 **Formulários Dinâmicos e Validáveis**
-- 📈 **Relatórios e Exportações de Dados**
-- 🌗 **Modo Claro e Escuro**
-- 📱 **Design Responsivo** para desktop, tablet e mobile
+- **Dashboard Gerencial** com gráficos e indicadores de despesas salariais
+- **Gestão de Funcionários**
+- **Calendário de Pagamentos e Presenças**
+- **Controle de Períodos e Métodos de Pagamento**
+- **Central de Mensagens e Notificações**
+- **Formulários Dinâmicos e Validáveis**
+- **Relatórios e Exportações de Dados**
+- **Modo Claro e Escuro**
+- **Design Responsivo** para desktop, tablet e mobile
 
 ---
 
-## 🧑‍💻 Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - **Next.js**
 - **Tailwind CSS**
@@ -39,7 +39,7 @@
 
 ---
 
-## 📦 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 pagador.ao/
@@ -55,7 +55,7 @@ pagador.ao/
 
 ---
 
-## 📌 Como executar o projeto
+## Como executar o projeto
 
 ```bash
 # Instale as dependências
@@ -70,20 +70,20 @@ pnpm run build
 
 ---
 
-## 🌍 Idioma
+## Idioma
 
 Toda a interface do sistema está em **português (pt-BR/AO)**, focando na acessibilidade e compreensão para empresas e colaboradores locais.
 
 ---
 
-## 📬 Contato
+## Contato
 
 Caso tenha sugestões, feedback ou queira contribuir, entre em contato comigo pelas redes sociais:
 
-- 🌐 [Facebook](https://www.facebook.com/ikitumba)
-- 📸 [Instagram](https://www.instagram.com/albertokitumba/)
-- 🐦 [Twitter (X)](https://x.com/TheKitumba)
-- 💼 [LinkedIn](https://www.linkedin.com/in/albertokitumba/)
+- [Facebook](https://www.facebook.com/ikitumba)
+- [Instagram](https://www.instagram.com/albertokitumba/)
+- [Twitter (X)](https://x.com/TheKitumba)
+- [LinkedIn](https://www.linkedin.com/in/albertokitumba/)
 
 ---
 
