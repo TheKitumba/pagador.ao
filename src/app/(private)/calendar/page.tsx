@@ -2,7 +2,8 @@
 
 import { Header } from "@/layouts/header"
 import { Card, CardContent } from "@/components/ui/card"
-import { Calendar } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Calendar03Icon } from "@hugeicons/core-free-icons"
 
 export default function CalendarPage() {
   return (
@@ -11,7 +12,7 @@ export default function CalendarPage() {
       <main className="flex-1 p-6">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Calendar className="h-12 w-12 text-muted-foreground mb-4" />
+            <HugeiconsIcon icon={Calendar03Icon} className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">Calendário Integrado</h3>
             <p className="text-muted-foreground text-center">
               Visualização de calendário em desenvolvimento. Gerencie eventos, reuniões e prazos importantes.

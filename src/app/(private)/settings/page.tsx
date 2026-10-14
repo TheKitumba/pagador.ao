@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { useThemeToggle } from "@/hooks/use-theme-toggle"
-import { Bell, Shield, User, Palette } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Notification03Icon, PaintBoardIcon, Shield01Icon, UserIcon } from "@hugeicons/core-free-icons"
 
 export default function SettingsPage() {
   const { theme, toggleTheme } = useThemeToggle()
@@ -23,7 +24,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5" />
+                <HugeiconsIcon icon={PaintBoardIcon} className="h-5 w-5" />
                 Aparência
               </CardTitle>
             </CardHeader>
@@ -51,7 +52,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Bell className="h-5 w-5" />
+                <HugeiconsIcon icon={Notification03Icon} className="h-5 w-5" />
                 Notificações
               </CardTitle>
             </CardHeader>
@@ -84,7 +85,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
+                <HugeiconsIcon icon={UserIcon} className="h-5 w-5" />
                 Perfil
               </CardTitle>
             </CardHeader>
@@ -109,7 +110,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
+                <HugeiconsIcon icon={Shield01Icon} className="h-5 w-5" />
                 Segurança
               </CardTitle>
             </CardHeader>

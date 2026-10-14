@@ -27,13 +27,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatCurrency, formatDateRange } from "@/lib/utils";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Filter,
-  MoreHorizontal,
-  Search,
-} from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon, ArrowRight01Icon, FilterHorizontalIcon, MoreHorizontalIcon, Search01Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 
 const payrollData = [
@@ -296,7 +291,7 @@ export function PayrollTable() {
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <HugeiconsIcon icon={Search01Icon} className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Pesquisar folha de pagamento..."
             value={searchTerm}
@@ -307,7 +302,7 @@ export function PayrollTable() {
 
         <Select>
           <SelectTrigger className="w-40">
-            <Filter className="h-4 w-4 mr-2" />
+            <HugeiconsIcon icon={FilterHorizontalIcon} className="h-4 w-4 mr-2" />
             <SelectValue placeholder="Todos anos" />
           </SelectTrigger>
           <SelectContent>
@@ -325,7 +320,7 @@ export function PayrollTable() {
         </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-48">
-            <Filter className="h-4 w-4 mr-2" />
+            <HugeiconsIcon icon={FilterHorizontalIcon} className="h-4 w-4 mr-2" />
             <SelectValue placeholder="Todos os Status" />
           </SelectTrigger>
           <SelectContent>
@@ -339,7 +334,7 @@ export function PayrollTable() {
 
         <Button variant="outline" className="gap-2 bg-transparent">
           Mais
-          <MoreHorizontal className="h-4 w-4" />
+          <HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
         </Button>
       </div>
 
@@ -411,7 +406,7 @@ export function PayrollTable() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
+                        <HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -444,7 +439,7 @@ export function PayrollTable() {
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
           >
-            <ChevronLeft className="h-4 w-4" />
+            <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
             Anterior
           </Button>
 
@@ -487,7 +482,7 @@ export function PayrollTable() {
             disabled={currentPage === totalPages}
           >
             Próximo
-            <ChevronRight className="h-4 w-4" />
+            <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
           </Button>
         </div>
       </div>

@@ -2,7 +2,8 @@
 
 import { Header } from "@/layouts/header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, Clock } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Calendar03Icon, Clock01Icon } from "@hugeicons/core-free-icons"
 import { Badge } from "@/components/ui/badge"
 
 export default function AttendancePage() {
@@ -55,7 +56,7 @@ export default function AttendancePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
+                <HugeiconsIcon icon={Calendar03Icon} className="h-5 w-5" />
                 Resumo Semanal
               </CardTitle>
             </CardHeader>
@@ -77,7 +78,7 @@ export default function AttendancePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
+                <HugeiconsIcon icon={Clock01Icon} className="h-5 w-5" />
                 Horários de Pico
               </CardTitle>
             </CardHeader>

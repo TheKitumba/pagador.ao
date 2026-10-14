@@ -2,7 +2,8 @@
 
 import { Header } from "@/layouts/header"
 import { Card, CardContent } from "@/components/ui/card"
-import { HelpCircle } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { HelpCircleIcon } from "@hugeicons/core-free-icons"
 
 export default function FeedbackPage() {
   return (
@@ -11,7 +12,7 @@ export default function FeedbackPage() {
       <main className="flex-1 p-6">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <HelpCircle className="h-12 w-12 text-muted-foreground mb-4" />
+            <HugeiconsIcon icon={HelpCircleIcon} className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">Centro de Feedback</h3>
             <p className="text-muted-foreground text-center">
               Sistema de feedback em desenvolvimento. Compartilhe suas ideias para melhorar o sistema.

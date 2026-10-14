@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Target, Award } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Award01Icon, Target02Icon } from "@hugeicons/core-free-icons"
 
 const performanceData = [
   {
@@ -87,7 +88,7 @@ export default function PerformancePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Award className="h-5 w-5" />
+                <HugeiconsIcon icon={Award01Icon} className="h-5 w-5" />
                 Top Performers
               </CardTitle>
             </CardHeader>
@@ -118,7 +119,7 @@ export default function PerformancePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5" />
+                <HugeiconsIcon icon={Target02Icon} className="h-5 w-5" />
                 Progresso das Metas
               </CardTitle>
             </CardHeader>

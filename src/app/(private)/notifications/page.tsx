@@ -4,7 +4,8 @@ import { Header } from "@/layouts/header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Check, X, Clock, AlertCircle, Info, CheckCircle } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Alert02Icon, Cancel01Icon, CheckmarkCircle02Icon, Clock01Icon, InformationCircleIcon, Tick02Icon } from "@hugeicons/core-free-icons"
 
 const notifications = [
   {
@@ -14,7 +15,7 @@ const notifications = [
     message: "A folha de pagamento de Janeiro foi processada com sucesso para 45 funcionários.",
     time: "há 2 horas",
     read: false,
-    icon: CheckCircle,
+    icon: CheckmarkCircle02Icon,
     color: "text-green-600",
   },
   {
@@ -24,7 +25,7 @@ const notifications = [
     message: "3 funcionários têm documentos pendentes que precisam ser revisados.",
     time: "há 4 horas",
     read: false,
-    icon: AlertCircle,
+    icon: Alert02Icon,
     color: "text-yellow-600",
   },
   {
@@ -34,7 +35,7 @@ const notifications = [
     message: "Maria Silva foi adicionada ao sistema e precisa de configuração inicial.",
     time: "há 1 dia",
     read: true,
-    icon: Info,
+    icon: InformationCircleIcon,
     color: "text-blue-600",
   },
   {
@@ -44,7 +45,7 @@ const notifications = [
     message: "As avaliações de performance do Q1 vencem em 3 dias.",
     time: "há 2 dias",
     read: true,
-    icon: Clock,
+    icon: Clock01Icon,
     color: "text-purple-600",
   },
 ]
@@ -62,11 +63,11 @@ export default function NotificationsPage() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm">
-              <Check className="h-4 w-4 mr-2" />
+              <HugeiconsIcon icon={Tick02Icon} className="h-4 w-4 mr-2" />
               Marcar todas como lidas
             </Button>
             <Button variant="outline" size="sm">
-              <X className="h-4 w-4 mr-2" />
+              <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4 mr-2" />
               Limpar todas
             </Button>
           </div>
@@ -78,7 +79,7 @@ export default function NotificationsPage() {
               <CardContent className="p-4">
                 <div className="flex items-start gap-4">
                   <div className={`p-2 rounded-full bg-muted ${notification.color}`}>
-                    <notification.icon className="h-4 w-4" />
+                    <HugeiconsIcon icon={notification.icon} className="h-4 w-4" />
                   </div>
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center justify-between">

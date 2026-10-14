@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { Filter, Mail, MoreHorizontal, Phone, Plus, Search } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Call02Icon, FilterHorizontalIcon, Mail01Icon, MoreHorizontalIcon, PlusSignIcon, Search01Icon } from '@hugeicons/core-free-icons';
 
 const employees = [
   {
@@ -109,16 +110,16 @@ export default function EmployeesPage() {
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full  max-w-xl">
             <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <HugeiconsIcon icon={Search01Icon} className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input placeholder="Pesquisar funcionários..." className="w-full pl-9" />
             </div>
             <Button variant="outline" className="gap-2 bg-transparent">
-              <Filter className="h-4 w-4" />
+              <HugeiconsIcon icon={FilterHorizontalIcon} className="h-4 w-4" />
               Filtros
             </Button>
           </div>
           <Button className="gap-2">
-            <Plus className="h-4 w-4" />
+            <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4" />
             Adicionar Funcionário
           </Button>
         </div>
@@ -139,17 +140,17 @@ export default function EmployeesPage() {
                     </div>
                   </div>
                   <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreHorizontal className="h-4 w-4" />
+                    <HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
                   </Button>
                 </div>
 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-sm">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <HugeiconsIcon icon={Mail01Icon} className="h-4 w-4 text-muted-foreground" />
                     <span className="text-muted-foreground">{employee.email}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <HugeiconsIcon icon={Call02Icon} className="h-4 w-4 text-muted-foreground" />
                     <span className="text-muted-foreground">{employee.phone}</span>
                   </div>
                 </div>

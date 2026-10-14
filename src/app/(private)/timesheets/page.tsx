@@ -2,7 +2,8 @@
 
 import { Header } from "@/layouts/header"
 import { Card, CardContent } from "@/components/ui/card"
-import { Clock } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Clock01Icon } from "@hugeicons/core-free-icons"
 
 export default function TimesheetsPage() {
   return (
@@ -11,7 +12,7 @@ export default function TimesheetsPage() {
       <main className="flex-1 p-6">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Clock className="h-12 w-12 text-muted-foreground mb-4" />
+            <HugeiconsIcon icon={Clock01Icon} className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">Planilhas de Horas</h3>
             <p className="text-muted-foreground text-center">
               Sistema de controle de horas em desenvolvimento. Registre e gerencie o tempo trabalhado.

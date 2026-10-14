@@ -4,7 +4,8 @@ import { Header } from "@/layouts/header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Eye, FileText, Plus } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Download04Icon, File02Icon, PlusSignIcon, ViewIcon } from "@hugeicons/core-free-icons";
 
 const invoices = [
   {
@@ -90,7 +91,7 @@ export default function InvoicesPage() {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Faturas Recentes</h2>
           <Button className="gap-2">
-            <Plus className="h-4 w-4" />
+            <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4" />
             Nova Fatura
           </Button>
         </div>
@@ -103,7 +104,7 @@ export default function InvoicesPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-2 rounded-lg bg-muted">
-                      <FileText className="h-5 w-5" />
+                      <HugeiconsIcon icon={File02Icon} className="h-5 w-5" />
                     </div>
                     <div>
                       <h3 className="font-semibold">{invoice.id}</h3>
@@ -138,10 +139,10 @@ export default function InvoicesPage() {
                     </Badge>
                     <div className="flex gap-2">
                       <Button variant="outline" size="icon">
-                        <Eye className="h-4 w-4" />
+                        <HugeiconsIcon icon={ViewIcon} className="h-4 w-4" />
                       </Button>
                       <Button variant="outline" size="icon">
-                        <Download className="h-4 w-4" />
+                        <HugeiconsIcon icon={Download04Icon} className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>

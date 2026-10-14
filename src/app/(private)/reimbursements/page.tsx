@@ -2,7 +2,8 @@
 
 import { Header } from "@/layouts/header"
 import { Card, CardContent } from "@/components/ui/card"
-import { FolderOpen } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { FolderOpenIcon } from "@hugeicons/core-free-icons"
 
 export default function ReimbursementsPage() {
   return (
@@ -11,7 +12,7 @@ export default function ReimbursementsPage() {
       <main className="flex-1 p-6">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <FolderOpen className="h-12 w-12 text-muted-foreground mb-4" />
+            <HugeiconsIcon icon={FolderOpenIcon} className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">Sistema de Reembolsos</h3>
             <p className="text-muted-foreground text-center">
               Módulo de reembolsos em desenvolvimento. Gerencie solicitações e aprovações de despesas.

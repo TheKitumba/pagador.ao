@@ -1,20 +1,6 @@
 "use client";
-import {
-  Bell,
-  Calendar,
-  Clock,
-  CreditCard,
-  FileText,
-  FolderOpen,
-  HelpCircle,
-  LayoutDashboard,
-  MessageSquare,
-  Search,
-  Settings,
-  Star,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar03Icon, ChartIncreaseIcon, Clock01Icon, CreditCardIcon, DashboardSquare01Icon, File02Icon, FolderOpenIcon, HelpCircleIcon, Message01Icon, Notification03Icon, Search01Icon, Settings02Icon, StarIcon, UserGroupIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -41,36 +27,36 @@ const navigation = [
   {
     title: "Principal",
     items: [
-      { title: "Dashboard", href: "/", icon: LayoutDashboard },
+      { title: "Dashboard", href: "/", icon: DashboardSquare01Icon },
       {
         title: "Notificações",
         href: "/notifications",
-        icon: Bell,
+        icon: Notification03Icon,
         badge: "12",
       },
-      { title: "Funcionários", href: "/employees", icon: Users },
-      { title: "Presença", href: "/attendance", icon: Clock },
-      { title: "Folha de Pagamento", href: "/payroll", icon: CreditCard },
-      { title: "Faturas", href: "/invoices", icon: FileText },
-      { title: "Performance", href: "/performance", icon: TrendingUp },
+      { title: "Funcionários", href: "/employees", icon: UserGroupIcon },
+      { title: "Presença", href: "/attendance", icon: Clock01Icon },
+      { title: "Folha de Pagamento", href: "/payroll", icon: CreditCardIcon },
+      { title: "Faturas", href: "/invoices", icon: File02Icon },
+      { title: "Performance", href: "/performance", icon: ChartIncreaseIcon },
     ],
   },
   {
     title: "Favoritos",
     items: [
-      { title: "Reembolsos", href: "/reimbursements", icon: FolderOpen },
-      { title: "Planilhas de Horas", href: "/timesheets", icon: Clock },
-      { title: "Logs de Horas Extras", href: "/overtime", icon: Star },
+      { title: "Reembolsos", href: "/reimbursements", icon: FolderOpenIcon },
+      { title: "Planilhas de Horas", href: "/timesheets", icon: Clock01Icon },
+      { title: "Logs de Horas Extras", href: "/overtime", icon: StarIcon },
     ],
   },
 ];
 
 const bottomNavigation = [
-  { title: "Mensagens", href: "/messages", icon: MessageSquare },
-  { title: "Calendário", href: "/calendar", icon: Calendar },
-  { title: "Feedback", href: "/feedback", icon: HelpCircle },
-  { title: "Configurações", href: "/settings", icon: Settings },
-  { title: "Central de Ajuda", href: "/help", icon: HelpCircle },
+  { title: "Mensagens", href: "/messages", icon: Message01Icon },
+  { title: "Calendário", href: "/calendar", icon: Calendar03Icon },
+  { title: "Feedback", href: "/feedback", icon: HelpCircleIcon },
+  { title: "Configurações", href: "/settings", icon: Settings02Icon },
+  { title: "Central de Ajuda", href: "/help", icon: HelpCircleIcon },
 ];
 
 export function AppSidebar() {
@@ -101,7 +87,7 @@ export function AppSidebar() {
 
         {/* Search Input */}
         <div className="relative mt-4">
-          <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <HugeiconsIcon icon={Search01Icon} className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <SidebarInput placeholder="Pesquisar..." className="pl-8" />
         </div>
       </SidebarHeader>
@@ -123,7 +109,7 @@ export function AppSidebar() {
                       className="w-full justify-start gap-3 px-2 py-2"
                     >
                       <Link href={item.href}>
-                        <item.icon className="h-4 w-4" />
+                        <HugeiconsIcon icon={item.icon} className="h-4 w-4" />
                         <span className="text-sm">{item.title}</span>
                         {item.badge && (
                           <Badge
@@ -171,7 +157,7 @@ export function AppSidebar() {
                 className="w-full justify-start gap-3 px-2 py-2"
               >
                 <Link href={item.href}>
-                  <item.icon className="h-4 w-4" />
+                  <HugeiconsIcon icon={item.icon} className="h-4 w-4" />
                   <span className="text-sm">{item.title}</span>
                 </Link>
               </SidebarMenuButton>

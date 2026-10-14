@@ -2,7 +2,8 @@
 
 import { Header } from "@/layouts/header"
 import { Card, CardContent } from "@/components/ui/card"
-import { Star } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { StarIcon } from "@hugeicons/core-free-icons"
 
 export default function OvertimePage() {
   return (
@@ -11,7 +12,7 @@ export default function OvertimePage() {
       <main className="flex-1 p-6">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Star className="h-12 w-12 text-muted-foreground mb-4" />
+            <HugeiconsIcon icon={StarIcon} className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">Controle de Horas Extras</h3>
             <p className="text-muted-foreground text-center">
               Sistema de horas extras em desenvolvimento. Monitore e aprove solicitações de horas extras.

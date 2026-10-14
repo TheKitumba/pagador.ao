@@ -37,7 +37,7 @@ A documentação funcional e técnica completa (módulos de RH, motor da folha, 
 ## Tecnologias
 
 - **Next.js 15** (App Router), **React 19**, **TypeScript**
-- **Tailwind CSS** + **shadcn/ui** (Radix UI) + **Lucide Icons**
+- **Tailwind CSS** + **shadcn/ui** (Radix UI) + **Hugeicons**
 - **Axios** (camada HTTP) + **TanStack Query** (estado de servidor)
 - **React Hook Form** + **Zod** (formulários e validação)
 - **nuqs** (estado na URL) e **@bentoo/state-man** (estado global)
@@ -105,6 +105,7 @@ src/
 - **Fatias verticais** — uma funcionalidade percorre `api/types` → `api/services` → `schemas` → `queries` → `_components` da rota. A fatia `auth` serve de referência.
 - **Sem regras de negócio na interface** — cálculos, permissões e validações de negócio são da API; a interface apresenta e envia intenções.
 - **Sessão** — os tokens ficam em cookies `HttpOnly` definidos pela API; o interceptor do Axios renova a sessão numa resposta 401 e repete o pedido.
+- **Ícones** — apenas Hugeicons: `<HugeiconsIcon icon={Search01Icon} className="h-4 w-4" />`, com o componente de `@hugeicons/react` e os ícones de `@hugeicons/core-free-icons`. Em listas de configuração (ex.: sidebar), guarda-se o ícone (`icon: Search01Icon`) e não um componente.
 - **Aliases** — `@/*` → `src/*`, `@api/*` → `src/api/*`, `@infra/*` → `src/*`.
 - **Ambiente** — variáveis validadas com zod em [src/config/env.ts](src/config/env.ts); valores expostos ao cliente têm o prefixo `NEXT_PUBLIC_`.
 

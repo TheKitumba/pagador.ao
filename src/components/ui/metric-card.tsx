@@ -1,6 +1,7 @@
 import type React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, TrendingDown } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ChartDecreaseIcon, ChartIncreaseIcon } from "@hugeicons/core-free-icons"
 import { cn } from "@/lib/utils"
 
 interface MetricCardProps {
@@ -25,9 +26,9 @@ export function MetricCard({ title, value, change, period, trend, children }: Me
           <div className="text-3xl font-bold tracking-tight">{value}</div>
           <div className="flex items-center gap-1 text-sm">
             {isPositive ? (
-              <TrendingUp className="h-4 w-4 text-green-600" />
+              <HugeiconsIcon icon={ChartIncreaseIcon} className="h-4 w-4 text-green-600" />
             ) : (
-              <TrendingDown className="h-4 w-4 text-red-600" />
+              <HugeiconsIcon icon={ChartDecreaseIcon} className="h-4 w-4 text-red-600" />
             )}
             <span className={cn("font-medium", isPositive ? "text-green-600" : "text-red-600")}>
               {Math.abs(change)}%

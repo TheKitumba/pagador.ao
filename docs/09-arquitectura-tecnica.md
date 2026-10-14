@@ -66,7 +66,7 @@ Domínios em produção: `app.pagador.ao` (interface) e `api.pagador.ao` (API).
 | Área | Tecnologia |
 | --- | --- |
 | Framework | Next.js 15 (App Router), React 19, TypeScript (modo `strict`) |
-| Estilos e componentes | Tailwind CSS 3, shadcn/ui sobre Radix UI, Lucide |
+| Estilos e componentes | Tailwind CSS 3, shadcn/ui sobre Radix UI, Hugeicons (`@hugeicons/react` + `@hugeicons/core-free-icons`) |
 | Formulários | React Hook Form + Zod (validação de experiência de utilizador; a validação de negócio é sempre da API) |
 | Cliente HTTP | Axios, com interceptores de renovação de sessão e normalização de erros (`ApiError`) |
 | Estado de servidor | TanStack Query (hooks por domínio em `src/queries`) |
