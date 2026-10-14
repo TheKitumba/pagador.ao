@@ -28,6 +28,12 @@
 
 ---
 
+## Documentação
+
+A documentação funcional e técnica completa (módulos de RH, motor da folha, enquadramento legal angolano, modelo de dados, integrações e roteiro) está em [`docs/`](./docs/README.md).
+
+---
+
 ## Tecnologias Utilizadas
 
 - **Next.js**
