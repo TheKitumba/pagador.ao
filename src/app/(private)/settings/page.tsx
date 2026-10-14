@@ -1,138 +1,241 @@
-"use client"
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight01Icon, Settings02Icon } from "@hugeicons/core-free-icons";
+import type { Metadata } from "next";
 
-import { Header } from "@/layouts/header"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
-import { useThemeToggle } from "@/hooks/use-theme-toggle"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { Notification03Icon, PaintBoardIcon, Shield01Icon, UserIcon } from "@hugeicons/core-free-icons"
+import { DescriptionList, ProgressBar, SectionCard } from "@/components/common/cards";
+import { DataTable } from "@/components/common/data-table";
+import { PageBody, PageHeader, PageTabPanel, PageTabs } from "@/components/common/page";
+import { PersonCell } from "@/components/common/person-avatar";
+import { StatusBadge } from "@/components/common/status-badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { company, currentUser, establishments } from "@/mocks/people";
+
+import { AccessDialog, roles } from "./_components/access-dialog";
+
+export const metadata: Metadata = { title: "Configurações" };
+
+const payItems = [
+  { code: "R001", name: "Vencimento base", kind: "Remuneração", irt: "Sim", ss: "Sim" },
+  { code: "R010", name: "Subsídio de alimentação", kind: "Remuneração", irt: "Acima de 30 000 Kz", ss: "Sim" },
+  { code: "R011", name: "Subsídio de transporte", kind: "Remuneração", irt: "Acima de 30 000 Kz", ss: "Sim" },
+  { code: "R040", name: "Horas extra — dia útil", kind: "Remuneração", irt: "Sim", ss: "Sim" },
+  { code: "R070", name: "Retroactivos", kind: "Remuneração", irt: "Sim", ss: "Sim" },
+  { code: "D001", name: "Segurança Social (3%)", kind: "Desconto", irt: "—", ss: "—" },
+  { code: "D002", name: "IRT", kind: "Desconto", irt: "—", ss: "—" },
+  { code: "D010", name: "Falta injustificada", kind: "Desconto", irt: "Reduz", ss: "Reduz" },
+];
+
+const legalTables = [
+  { name: "Tabela de IRT — Grupo A", version: "2026 v2", from: "01/10/2026", status: "Em vigor" },
+  { name: "Taxas de Segurança Social (3% + 8%)", version: "2024 v1", from: "01/01/2024", status: "Em vigor" },
+  { name: "Feriados nacionais", version: "2026 v1", from: "01/01/2026", status: "Em vigor" },
+  { name: "Tabela de IRT — Grupo A", version: "2026 v1", from: "01/01/2026", status: "Substituída" },
+];
+
+const workflows = [
+  { request: "Férias", flow: "Chefia directa → Técnico de RH" },
+  { request: "Horas extra", flow: "Chefia directa (prévia) → confirmação" },
+  { request: "Adiantamento salarial", flow: "Chefia → Gestor de RH → Aprovador financeiro" },
+  { request: "Reembolso de despesas", flow: "Chefia → Finanças" },
+  { request: "Folha de pagamento", flow: "Processador → Aprovador financeiro" },
+  { request: "Cessação de contrato", flow: "Gestor de RH → Direcção" },
+];
+
+function Field({ id, label, defaultValue, type = "text", hint }: { id: string; label: string; defaultValue: string; type?: string; hint?: string }) {
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <Input id={id} type={type} defaultValue={defaultValue} aria-describedby={hint ? `${id}-hint` : undefined} />
+      {hint && (
+        <p id={`${id}-hint`} className="text-xs text-muted-foreground">
+          {hint}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function ToggleRow({ id, label, description, defaultChecked }: { id: string; label: string; description: string; defaultChecked?: boolean }) {
+  return (
+    <div className="flex items-start justify-between gap-6 py-3">
+      <div>
+        <Label htmlFor={id} className="text-sm font-medium">
+          {label}
+        </Label>
+        <p id={`${id}-desc`} className="text-sm text-muted-foreground">
+          {description}
+        </p>
+      </div>
+      <Switch id={id} defaultChecked={defaultChecked} aria-describedby={`${id}-desc`} />
+    </div>
+  );
+}
 
 export default function SettingsPage() {
-  const { theme, toggleTheme } = useThemeToggle()
-
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header title="Configurações" subtitle="Gerencie suas preferências e configurações do sistema" />
+    <>
+      <PageHeader title="Configurações" icon={Settings02Icon} description="Empresa, rubricas, parâmetros legais, utilizadores e subscrição" />
+      <PageTabs
+        tabs={[
+          { value: "company", label: "Empresa" },
+          { value: "profile", label: "O meu perfil" },
+          { value: "users", label: "Utilizadores e acessos" },
+          { value: "pay-items", label: "Rubricas" },
+          { value: "legal", label: "Parâmetros legais" },
+          { value: "workflows", label: "Fluxos de aprovação" },
+          { value: "notifications", label: "Notificações" },
+          { value: "billing", label: "Subscrição" },
+        ]}
+      >
+        <PageBody className="max-w-5xl">
+          <PageTabPanel value="company" className="space-y-6">
+            <SectionCard title="Dados da entidade empregadora" description="Aparecem nos recibos, contratos e mapas fiscais">
+              <form className="grid gap-4 sm:grid-cols-2">
+                <Field id="company-name" label="Denominação social" defaultValue={company.name} />
+                <Field id="company-nif" label="NIF" defaultValue={company.nif} />
+                <Field id="company-inss" label="N.º de contribuinte do INSS" defaultValue="0012 4478 90" />
+                <Field id="company-cae" label="CAE (actividade)" defaultValue="52100 — Armazenagem" />
+                <div className="sm:col-span-2">
+                  <Field id="company-address" label="Sede" defaultValue="Rua do Talatona, Edifício Kianda, Luanda" />
+                </div>
+                <div className="flex justify-end sm:col-span-2">
+                  <Button type="submit">Guardar alterações</Button>
+                </div>
+              </form>
+            </SectionCard>
+            <SectionCard title="Estabelecimentos" description="Usados na assiduidade, nos centros de custo e nos relatórios" contentClassName="px-2 pb-2">
+              <ul className="divide-y">
+                {establishments.map((site) => (
+                  <li key={site} className="flex items-center justify-between px-3 py-3 text-sm">
+                    <span className="font-medium">{site}</span>
+                    <Button variant="ghost" size="sm">
+                      Editar<span className="sr-only"> {site}</span>
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </SectionCard>
+          </PageTabPanel>
 
-      <main className="flex-1 p-6 space-y-6">
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Appearance Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <HugeiconsIcon icon={PaintBoardIcon} className="h-5 w-5" />
-                Aparência
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Modo Escuro</Label>
-                  <p className="text-sm text-muted-foreground">Alternar entre tema claro e escuro</p>
+          <PageTabPanel value="profile" className="space-y-6">
+            <SectionCard title="Dados pessoais">
+              <form className="grid gap-4 sm:grid-cols-2">
+                <Field id="me-name" label="Nome" defaultValue={currentUser.name} />
+                <Field id="me-email" label="E-mail" type="email" defaultValue={currentUser.email} />
+                <div className="flex justify-end sm:col-span-2">
+                  <Button type="submit">Guardar</Button>
                 </div>
-                <Switch checked={theme === "dark"} onCheckedChange={toggleTheme} />
+              </form>
+            </SectionCard>
+            <SectionCard title="Segurança">
+              <div className="divide-y">
+                <ToggleRow id="2fa" label="Autenticação de dois factores" description="Obrigatória para quem acede a salários, pagamentos e configurações." defaultChecked />
+                <ToggleRow id="sessions" label="Terminar sessão após 30 minutos de inactividade" description="Recomendado em computadores partilhados." defaultChecked />
               </div>
-              <Separator />
-              <div className="space-y-2">
-                <Label>Idioma</Label>
-                <select className="w-full p-2 border rounded-md bg-background">
-                  <option value="pt-BR">Português (Brasil)</option>
-                  <option value="en-US">English (US)</option>
-                  <option value="es-ES">Español</option>
-                </select>
-              </div>
-            </CardContent>
-          </Card>
+            </SectionCard>
+          </PageTabPanel>
 
-          {/* Notification Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <HugeiconsIcon icon={Notification03Icon} className="h-5 w-5" />
-                Notificações
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Notificações por Email</Label>
-                  <p className="text-sm text-muted-foreground">Receber atualizações por email</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Notificações Push</Label>
-                  <p className="text-sm text-muted-foreground">Receber notificações no navegador</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Relatórios Semanais</Label>
-                  <p className="text-sm text-muted-foreground">Resumo semanal por email</p>
-                </div>
-                <Switch />
-              </div>
-            </CardContent>
-          </Card>
+          <PageTabPanel value="users" className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground">Quem gere a conta e com que papel. Cada acção fica registada na auditoria.</p>
+              <AccessDialog />
+            </div>
+            <DataTable
+              caption="Utilizadores com acesso"
+              getRowKey={(row) => row.email}
+              rows={[
+                { name: "Isabel Neto", email: "isabel.neto@kianda.co.ao", role: roles[0], twoFactor: true },
+                { name: "Ana Mateus", email: "ana.mateus@kianda.co.ao", role: roles[3], twoFactor: true },
+                { name: "Graça Mbemba", email: "graca.mbemba@kianda.co.ao", role: roles[4], twoFactor: true },
+                { name: "Feliciano Lukamba", email: "feliciano.lukamba@kianda.co.ao", role: roles[5], twoFactor: false },
+              ]}
+              columns={[
+                { key: "user", header: "Utilizador", cell: (row) => <PersonCell name={row.name} detail={row.email} /> },
+                { key: "role", header: "Papel", cell: (row) => row.role },
+                { key: "2fa", header: "2FA", cell: (row) => <StatusBadge tone={row.twoFactor ? "success" : "warning"}>{row.twoFactor ? "Activo" : "Por activar"}</StatusBadge> },
+              ]}
+            />
+          </PageTabPanel>
 
-          {/* Profile Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <HugeiconsIcon icon={UserIcon} className="h-5 w-5" />
-                Perfil
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Nome Completo</Label>
-                <Input defaultValue="Administrador Sistema" />
-              </div>
-              <div className="space-y-2">
-                <Label>Email</Label>
-                <Input defaultValue="admin@zenus.com" />
-              </div>
-              <div className="space-y-2">
-                <Label>Cargo</Label>
-                <Input defaultValue="Administrador do Sistema" />
-              </div>
-              <Button className="w-full">Salvar Alterações</Button>
-            </CardContent>
-          </Card>
+          <PageTabPanel value="pay-items">
+            <DataTable
+              caption="Rubricas da folha"
+              rows={payItems}
+              getRowKey={(row) => row.code}
+              columns={[
+                { key: "code", header: "Código", className: "w-20", cell: (row) => <span className="tabular text-muted-foreground">{row.code}</span> },
+                { key: "name", header: "Rubrica", cell: (row) => <span className="font-medium">{row.name}</span> },
+                { key: "kind", header: "Tipo", hideBelow: "sm", cell: (row) => <StatusBadge tone={row.kind === "Desconto" ? "danger" : "success"} dot={false}>{row.kind}</StatusBadge> },
+                { key: "irt", header: "Incide IRT", hideBelow: "md", cell: (row) => row.irt },
+                { key: "ss", header: "Incide SS", hideBelow: "md", cell: (row) => row.ss },
+              ]}
+            />
+          </PageTabPanel>
 
-          {/* Security Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <HugeiconsIcon icon={Shield01Icon} className="h-5 w-5" />
-                Segurança
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Autenticação de Dois Fatores</Label>
-                  <p className="text-sm text-muted-foreground">Adicionar camada extra de segurança</p>
-                </div>
-                <Switch />
+          <PageTabPanel value="legal" className="space-y-4">
+            <p className="rounded-xl border border-info/20 bg-info/5 p-4 text-sm">
+              As tabelas legais são publicadas pela equipa pagador.ao com data de vigência. Cada processamento guarda a versão usada, para que possa ser reproduzido.
+            </p>
+            <DataTable
+              caption="Tabelas legais"
+              rows={legalTables}
+              getRowKey={(row) => `${row.name}-${row.version}`}
+              columns={[
+                { key: "name", header: "Tabela", cell: (row) => <span className="font-medium">{row.name}</span> },
+                { key: "version", header: "Versão", cell: (row) => row.version },
+                { key: "from", header: "Em vigor desde", hideBelow: "sm", cell: (row) => <span className="tabular">{row.from}</span> },
+                { key: "status", header: "Estado", cell: (row) => <StatusBadge tone={row.status === "Em vigor" ? "success" : "neutral"}>{row.status}</StatusBadge> },
+              ]}
+            />
+          </PageTabPanel>
+
+          <PageTabPanel value="workflows">
+            <SectionCard title="Fluxos de aprovação" description="Quem aprova cada tipo de pedido" contentClassName="px-2 pb-2">
+              <ul className="divide-y">
+                {workflows.map((workflow) => (
+                  <li key={workflow.request} className="flex items-center gap-4 px-3 py-3">
+                    <span className="w-48 shrink-0 text-sm font-medium">{workflow.request}</span>
+                    <span className="flex-1 text-sm text-muted-foreground">{workflow.flow}</span>
+                    <Button variant="ghost" size="icon-sm" aria-label={`Editar fluxo de ${workflow.request}`}>
+                      <HugeiconsIcon icon={ArrowRight01Icon} />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </SectionCard>
+          </PageTabPanel>
+
+          <PageTabPanel value="notifications">
+            <SectionCard title="Notificações por e-mail e SMS">
+              <div className="divide-y">
+                <ToggleRow id="n-deadlines" label="Prazos legais (AGT e INSS)" description="10 e 3 dias antes de cada prazo." defaultChecked />
+                <ToggleRow id="n-approvals" label="Pedidos à espera de aprovação" description="Resumo diário às 08:00." defaultChecked />
+                <ToggleRow id="n-contracts" label="Contratos a terminar" description="30 dias antes do termo." defaultChecked />
+                <ToggleRow id="n-sms" label="Recibos por SMS" description="Para trabalhadores sem e-mail." />
               </div>
-              <Separator />
-              <Button variant="outline" className="w-full bg-transparent">
-                Alterar Senha
-              </Button>
-              <Button variant="outline" className="w-full bg-transparent">
-                Gerenciar Sessões
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    </div>
-  )
+            </SectionCard>
+          </PageTabPanel>
+
+          <PageTabPanel value="billing">
+            <SectionCard title={`Plano ${company.plan}`} description="Facturação mensal por trabalhador activo">
+              <DescriptionList
+                columns={3}
+                items={[
+                  { label: "Trabalhadores activos", value: "248 de 300" },
+                  { label: "Próxima factura", value: "10/11/2026" },
+                  { label: "Valor estimado", value: "372 000,00 Kz" },
+                ]}
+              />
+              <div className="mt-5">
+                <ProgressBar value={(248 / 300) * 100} label="Utilização do plano" />
+              </div>
+            </SectionCard>
+          </PageTabPanel>
+        </PageBody>
+      </PageTabs>
+    </>
+  );
 }

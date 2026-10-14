@@ -1,6 +1,6 @@
 # 10 — Mapa de navegação e ecrãs
 
-Coluna **Estado:** *Existe* = rota já criada neste repositório; *Novo* = rota a criar.
+Coluna **Estado:** *Existe* = ecrã implementado no frontend (com dados de demonstração de `src/mocks` até o endpoint da API existir); *Novo* = rota a criar.
 
 ## 10.1 Área pública
 
@@ -8,9 +8,9 @@ Coluna **Estado:** *Existe* = rota já criada neste repositório; *Novo* = rota 
 | --- | --- | --- | --- |
 | `/login` | Entrar | Existe | E-mail/telemóvel + palavra-passe, 2FA, "esqueci-me da palavra-passe", SSO |
 | `/register` | Criar conta | Existe | Dados do responsável, da empresa (nome, NIF, dimensão, província), aceitação dos termos e da política de privacidade |
-| `/forgot-password` | Recuperar acesso | Novo | Envio de ligação ou OTP |
-| `/onboarding` | Assistente inicial | Novo | Passos: empresa → estrutura → rubricas → importação de trabalhadores → primeira folha |
-| `/careers/[empresa]` | Página de carreiras | Novo | Vagas abertas e formulário de candidatura |
+| `/forgot-password` | Recuperar acesso | Existe | Envio de ligação ou OTP |
+| `/onboarding` | Assistente inicial | Existe | Passos: empresa → estrutura → rubricas → importação de trabalhadores → primeira folha |
+| `/careers/[empresa]` | Página de carreiras | Existe | Vagas abertas e formulário de candidatura |
 
 ## 10.2 Área autenticada — navegação lateral
 
@@ -19,14 +19,15 @@ Coluna **Estado:** *Existe* = rota já criada neste repositório; *Novo* = rota 
 | Rota | Ecrã | Estado | Conteúdo principal |
 | --- | --- | --- | --- |
 | `/` | Dashboard | Existe | Indicadores (efectivo, custo da folha do mês, IRT/INSS a pagar, absentismo), gráfico de evolução da despesa salarial, gráfico de descontos e impostos, tarefas pendentes, prazos legais próximos, aniversários |
+| `/approvals` | Aprovações | Existe | Caixa única de pedidos pendentes (férias, horas extra, reembolsos, adiantamentos, folha, lotes), aprovar/rejeitar com anulação |
 | `/notifications` | Notificações | Existe | Lista filtrável por tipo, marcar como lida, preferências |
 | `/employees` | Funcionários | Existe | Lista com pesquisa e filtros, importação, exportação, criação |
-| `/employees/[id]` | Ficha do trabalhador | Novo | Separadores: Dados pessoais · Profissional · Contratos · Remuneração · Assiduidade · Férias · Documentos · Desempenho · Formação · Histórico |
-| `/employees/new` | Novo trabalhador | Novo | Formulário em passos com validação de BI, NIF e IBAN |
+| `/employees/[id]` | Ficha do trabalhador | Existe | Separadores: Dados pessoais · Profissional · Contratos · Remuneração · Assiduidade · Férias · Documentos · Desempenho · Formação · Histórico |
+| `/employees/new` | Novo trabalhador | Existe | Formulário em passos com validação de BI, NIF e IBAN |
 | `/attendance` | Presença | Existe | Painel do dia, marcações, correcções, fecho do período |
 | `/payroll` | Folha de pagamento | Existe | Selector de período, lista de processamentos e respectivo estado, tabela de recibos |
-| `/payroll/[runId]` | Processamento | Novo | Pré-folha, lançamentos variáveis, cálculo, alertas, comparação com o mês anterior, aprovação, ficheiros bancários |
-| `/payroll/[runId]/payslips/[id]` | Recibo | Novo | Detalhe com o rasto de cálculo de cada linha |
+| `/payroll/[runId]` | Processamento | Existe | Pré-folha, lançamentos variáveis, cálculo, alertas, comparação com o mês anterior, aprovação, ficheiros bancários |
+| `/payroll/[runId]/payslips/[id]` | Recibo | Existe | Detalhe com o rasto de cálculo de cada linha |
 | `/invoices` | Faturas | Existe | Facturas de prestadores de serviço (M23) e facturação da subscrição |
 | `/performance` | Performance | Existe | Ciclos de avaliação, objectivos, resultados, 9-box |
 
@@ -48,7 +49,7 @@ Coluna **Estado:** *Existe* = rota já criada neste repositório; *Novo* = rota 
 | `/settings` | Configurações | Existe | Empresa, estrutura, rubricas, parâmetros legais, catálogos, fluxos, utilizadores, notificações, subscrição |
 | `/help` | Central de ajuda | Existe | Artigos, pesquisa, contacto com o suporte |
 
-### Rotas novas a acrescentar à navegação
+### Rotas acrescentadas à navegação
 
 | Rota | Módulo |
 | --- | --- |
@@ -68,24 +69,26 @@ Coluna **Estado:** *Existe* = rota já criada neste repositório; *Novo* = rota 
 | `/reports` | M21 — Relatórios e análise |
 | `/audit` | M25 — Registo de auditoria |
 
-## 10.3 Proposta de reorganização da navegação lateral
+## 10.3 Navegação lateral
 
-À medida que os módulos crescem, a navegação deveria agrupar-se por área:
+A navegação está agrupada por área (definida em `src/config/navigation.ts`, que alimenta também a pesquisa global ⌘K):
 
 ```
-Principal       Dashboard · Notificações · Mensagens · Calendário
+Principal       Início · Aprovações · Notificações · Mensagens · Calendário
 Pessoas         Funcionários · Organização · Contratos · Recrutamento
 Tempo           Presença · Escalas · Férias e faltas · Horas extra · Planilhas de horas
 Remuneração     Folha de pagamento · Pagamentos · Benefícios · Empréstimos · Reembolsos
 Obrigações      Mapas fiscais (AGT/INSS) · Cessações
 Desenvolvimento Performance · Feedback · Formação
 Gestão          Relatórios · Disciplina · SST · Faturas · Auditoria
-Sistema         Configurações · Central de ajuda
+Sistema         Aparência · Portal do trabalhador · Configurações · Central de ajuda
 ```
 
 Os itens visíveis dependem do plano contratado e das permissões do utilizador.
 
 ## 10.4 Portal do trabalhador (web responsiva, grupo de rotas `(portal)`)
+
+Implementados em `/portal`, `/portal/payslips`, `/portal/time`, `/portal/requests` e `/portal/profile`, com navegação inferior no telemóvel. Escala, Desempenho, Formação e Equipa ficam por implementar.
 
 | Ecrã | Conteúdo |
 | --- | --- |

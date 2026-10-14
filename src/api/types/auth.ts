@@ -18,8 +18,15 @@ export interface LoginResponse {
 }
 
 export interface RegisterRequest {
+  name: string;
   email: string;
   password: string;
+  company: {
+    name: string;
+    nif: string;
+    size: string;
+    province: string;
+  };
 }
 
 export interface RegisterResponse {

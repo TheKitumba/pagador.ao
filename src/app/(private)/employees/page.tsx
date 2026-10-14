@@ -1,171 +1,71 @@
-'use client';
+import { HugeiconsIcon } from "@hugeicons/react";
+import { FileImportIcon, UserAdd01Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
+import type { Metadata } from "next";
+import Link from "next/link";
 
-import { Header } from '@/layouts/header';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { StatusBadge } from '@/components/ui/status-badge';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Call02Icon, FilterHorizontalIcon, Mail01Icon, MoreHorizontalIcon, PlusSignIcon, Search01Icon } from '@hugeicons/core-free-icons';
+import { PageBody, PageHeader, PageTabPanel, PageTabs } from "@/components/common/page";
+import { ExportButton, FilterMenu, SearchField } from "@/components/common/toolbar";
+import { Button } from "@/components/ui/button";
+import { departments, type EmployeeStatus, employees, establishments } from "@/mocks/people";
 
-const employees = [
-  {
-    id: 1,
-    name: 'João Silva',
-    email: 'joao.silva@zenus.com',
-    phone: '+55 11 99999-9999',
-    position: 'Desenvolvedor Senior',
-    department: 'Tecnologia',
-    salary: 12000,
-    status: 'active',
-    avatar: '/placeholder.svg?height=40&width=40',
-    initials: 'JS',
-  },
-  {
-    id: 2,
-    name: 'Maria Santos',
-    email: 'maria.santos@zenus.com',
-    phone: '+55 11 88888-8888',
-    position: 'Gerente de Produto',
-    department: 'Produto',
-    salary: 15000,
-    status: 'active',
-    avatar: '/placeholder.svg?height=40&width=40',
-    initials: 'MS',
-  },
-  {
-    id: 3,
-    name: 'Alex Johnson',
-    email: 'alex.johnson@zenus.com',
-    phone: '+55 11 77777-7777',
-    position: 'Designer UX/UI',
-    department: 'Design',
-    salary: 9000,
-    status: 'inactive',
-    avatar: '/placeholder.svg?height=40&width=40',
-    initials: 'AJ',
-  },
-  {
-    id: 4,
-    name: 'Emily Davis',
-    email: 'emily.davis@zenus.com',
-    phone: '+55 11 66666-6666',
-    position: 'Analista de Marketing',
-    department: 'Marketing',
-    salary: 7500,
-    status: 'active',
-    avatar: '/placeholder.svg?height=40&width=40',
-    initials: 'ED',
-  },
+import { EmployeeTable } from "./_components/employee-table";
+
+export const metadata: Metadata = { title: "Trabalhadores" };
+
+const statusTabs: { value: string; label: string; status?: EmployeeStatus }[] = [
+  { value: "all", label: "Todos" },
+  { value: "active", label: "Activos", status: "active" },
+  { value: "probation", label: "Período experimental", status: "probation" },
+  { value: "leave", label: "De licença", status: "leave" },
+  { value: "terminated", label: "Cessados", status: "terminated" },
 ];
 
 export default function EmployeesPage() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header title="Funcionários" subtitle="Gerencie sua equipe e informações dos funcionários" />
-
-      <main className="flex-1 p-6 space-y-6">
-        {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total de Funcionários</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">156</div>
-              <p className="text-xs text-muted-foreground">+12% desde o mês passado</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Ativos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">142</div>
-              <p className="text-xs text-muted-foreground">91% da equipe</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Novos este mês</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">8</div>
-              <p className="text-xs text-muted-foreground">+3 desde a semana passada</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Departamentos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">12</div>
-              <p className="text-xs text-muted-foreground">Across all divisions</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 w-full  max-w-xl">
-            <div className="relative w-full">
-              <HugeiconsIcon icon={Search01Icon} className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="Pesquisar funcionários..." className="w-full pl-9" />
-            </div>
-            <Button variant="outline" className="gap-2 bg-transparent">
-              <HugeiconsIcon icon={FilterHorizontalIcon} className="h-4 w-4" />
-              Filtros
+    <>
+      <PageHeader
+        title="Trabalhadores"
+        icon={UserGroupIcon}
+        description="Dossiê digital de cada trabalhador"
+        actions={
+          <>
+            <Button variant="outline" className="hidden md:inline-flex">
+              <HugeiconsIcon icon={FileImportIcon} aria-hidden />
+              Importar Excel
             </Button>
-          </div>
-          <Button className="gap-2">
-            <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4" />
-            Adicionar Funcionário
-          </Button>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {employees.map((employee) => (
-            <Card key={employee.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={employee.avatar || '/placeholder.svg'} />
-                      <AvatarFallback>{employee.initials}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="font-semibold">{employee.name}</h3>
-                      <p className="text-sm text-muted-foreground">{employee.position}</p>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <HugeiconsIcon icon={Mail01Icon} className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">{employee.email}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <HugeiconsIcon icon={Call02Icon} className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">{employee.phone}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <Badge variant="secondary">{employee.department}</Badge>
-                  <StatusBadge status={employee.status === 'active' ? 'received' : 'pending'}>
-                    {employee.status === 'active' ? 'Ativo' : 'Inativo'}
-                  </StatusBadge>
-                </div>
-              </CardContent>
-            </Card>
+            <Button asChild>
+              <Link href="/employees/new">
+                <HugeiconsIcon icon={UserAdd01Icon} aria-hidden />
+                <span className="hidden sm:inline">Admitir trabalhador</span>
+                <span className="sr-only sm:hidden">Admitir trabalhador</span>
+              </Link>
+            </Button>
+          </>
+        }
+      />
+      <PageTabs
+        tabs={statusTabs.map((tab) => ({
+          value: tab.value,
+          label: tab.label,
+          count: tab.status ? employees.filter((employee) => employee.status === tab.status).length : employees.length,
+        }))}
+        toolbar={
+          <>
+            <SearchField label="Pesquisar trabalhadores" placeholder="Nome, n.º, NIF ou cargo" />
+            <FilterMenu label="Departamento" param="dept" options={departments.map((d) => ({ value: d.name, label: d.name }))} />
+            <FilterMenu label="Local" param="site" options={establishments.map((e) => ({ value: e, label: e }))} />
+            <ExportButton />
+          </>
+        }
+      >
+        <PageBody>
+          {statusTabs.map((tab) => (
+            <PageTabPanel key={tab.value} value={tab.value}>
+              <EmployeeTable status={tab.status} />
+            </PageTabPanel>
           ))}
-        </div>
-      </main>
-    </div>
+        </PageBody>
+      </PageTabs>
+    </>
   );
 }

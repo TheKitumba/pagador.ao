@@ -1,146 +1,122 @@
-"use client"
+import { HugeiconsIcon } from "@hugeicons/react";
+import { PlusSignIcon, Target02Icon } from "@hugeicons/core-free-icons";
+import type { Metadata } from "next";
 
-import { Header } from "@/layouts/header"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { Award01Icon, Target02Icon } from "@hugeicons/core-free-icons"
+import { ProgressBar, SectionCard } from "@/components/common/cards";
+import { PageBody, PageHeader, PageTabPanel, PageTabs } from "@/components/common/page";
+import { PersonAvatar } from "@/components/common/person-avatar";
+import { StatusBadge } from "@/components/common/status-badge";
+import { Button } from "@/components/ui/button";
+import { formatDate } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import { goals, nineBox, reviewCycles } from "@/mocks/growth";
 
-const performanceData = [
-  {
-    employee: "João Silva",
-    avatar: "/placeholder.svg?height=32&width=32",
-    initials: "JS",
-    score: 92,
-    goals: 8,
-    completed: 7,
-    department: "Tecnologia",
-  },
-  {
-    employee: "Maria Santos",
-    avatar: "/placeholder.svg?height=32&width=32",
-    initials: "MS",
-    score: 88,
-    goals: 6,
-    completed: 5,
-    department: "Produto",
-  },
-  {
-    employee: "Alex Johnson",
-    avatar: "/placeholder.svg?height=32&width=32",
-    initials: "AJ",
-    score: 85,
-    goals: 5,
-    completed: 4,
-    department: "Design",
-  },
-]
+export const metadata: Metadata = { title: "Desempenho" };
+
+const cycleStatus = {
+  scheduled: { label: "Agendado", tone: "neutral" as const },
+  active: { label: "A decorrer", tone: "info" as const },
+  closed: { label: "Concluído", tone: "success" as const },
+};
 
 export default function PerformancePage() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header title="Performance" subtitle="Avaliações e métricas de desempenho" />
-
-      <main className="flex-1 p-6 space-y-6">
-        {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Score Médio</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">88.5</div>
-              <p className="text-xs text-muted-foreground">+5.2% desde o último trimestre</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Metas Concluídas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">76%</div>
-              <p className="text-xs text-muted-foreground">234 de 308 metas</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Top Performers</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">23</div>
-              <p className="text-xs text-muted-foreground">Score acima de 90</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Avaliações Pendentes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">12</div>
-              <p className="text-xs text-muted-foreground">Vencem esta semana</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <HugeiconsIcon icon={Award01Icon} className="h-5 w-5" />
-                Top Performers
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {performanceData.map((employee, index) => (
-                  <div key={employee.employee} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-muted-foreground">#{index + 1}</span>
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={employee.avatar || "/placeholder.svg"} />
-                          <AvatarFallback>{employee.initials}</AvatarFallback>
-                        </Avatar>
-                      </div>
-                      <div>
-                        <p className="font-medium">{employee.employee}</p>
-                        <p className="text-sm text-muted-foreground">{employee.department}</p>
-                      </div>
-                    </div>
-                    <Badge variant="secondary">{employee.score}%</Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <HugeiconsIcon icon={Target02Icon} className="h-5 w-5" />
-                Progresso das Metas
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {performanceData.map((employee) => (
-                  <div key={employee.employee} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{employee.employee}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {employee.completed}/{employee.goals} metas
+    <>
+      <PageHeader
+        title="Desempenho"
+        icon={Target02Icon}
+        description="Ciclos de avaliação, objectivos e resultados"
+        actions={
+          <Button>
+            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
+            <span className="hidden sm:inline">Novo ciclo</span>
+            <span className="sr-only sm:hidden">Novo ciclo</span>
+          </Button>
+        }
+      />
+      <PageTabs
+        tabs={[
+          { value: "cycles", label: "Ciclos", count: reviewCycles.length },
+          { value: "goals", label: "Objectivos", count: goals.length },
+          { value: "ninebox", label: "Matriz 9-box" },
+        ]}
+      >
+        <PageBody>
+          <PageTabPanel value="cycles">
+            <ul className="grid gap-4 md:grid-cols-3">
+              {reviewCycles.map((cycle) => (
+                <li key={cycle.name} className="rounded-xl border bg-card p-5 shadow-card">
+                  <StatusBadge tone={cycleStatus[cycle.status].tone}>{cycleStatus[cycle.status].label}</StatusBadge>
+                  <h2 className="mt-3 text-[15px] font-semibold">{cycle.name}</h2>
+                  <p className="text-sm text-muted-foreground">{cycle.period}</p>
+                  <div className="mt-5 space-y-1.5">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Avaliações concluídas</span>
+                      <span className="tabular">
+                        {cycle.completed} / {cycle.participants}
                       </span>
                     </div>
-                    <Progress value={(employee.completed / employee.goals) * 100} className="h-2" />
+                    <ProgressBar value={(cycle.completed / cycle.participants) * 100} label={`Progresso de ${cycle.name}`} tone={cycle.status === "closed" ? "success" : "info"} />
                   </div>
+                </li>
+              ))}
+            </ul>
+          </PageTabPanel>
+
+          <PageTabPanel value="goals">
+            <SectionCard title="Objectivos de 2026" contentClassName="px-0 pb-0">
+              <ul className="divide-y">
+                {goals.map((goal) => (
+                  <li key={goal.title} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center">
+                    <div className="flex min-w-0 flex-1 items-center gap-3">
+                      <PersonAvatar name={goal.owner} />
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">{goal.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {goal.owner} · até {formatDate(goal.due)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 sm:w-72">
+                      <ProgressBar value={goal.progress} tone={goal.status === "at-risk" ? "warning" : "success"} label={goal.title} />
+                      <span className="w-10 text-right text-sm tabular">{goal.progress}%</span>
+                      <StatusBadge tone={goal.status === "at-risk" ? "warning" : "success"}>{goal.status === "at-risk" ? "Em risco" : "No bom caminho"}</StatusBadge>
+                    </div>
+                  </li>
                 ))}
+              </ul>
+            </SectionCard>
+          </PageTabPanel>
+
+          <PageTabPanel value="ninebox">
+            <SectionCard title="Desempenho × potencial" description="Avaliação semestral 2026 · 248 trabalhadores">
+              <div className="flex gap-3">
+                <p className="flex w-6 items-center justify-center text-xs text-muted-foreground [writing-mode:vertical-rl] rotate-180">Potencial →</p>
+                <div className="flex-1">
+                  <ul className="grid grid-cols-3 gap-2">
+                    {nineBox.map((cell, index) => (
+                      <li
+                        key={cell.label}
+                        className={cn(
+                          "flex min-h-24 flex-col justify-between rounded-lg border p-3",
+                          [2].includes(index) && "border-success/30 bg-success/10",
+                          [1, 5].includes(index) && "bg-success/5",
+                          [6].includes(index) && "border-destructive/20 bg-destructive/5",
+                          [3].includes(index) && "bg-warning/5",
+                        )}
+                      >
+                        <span className="text-xs font-medium">{cell.label}</span>
+                        <span className="text-2xl font-semibold tabular">{cell.count}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-2 text-center text-xs text-muted-foreground">Desempenho →</p>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    </div>
-  )
+            </SectionCard>
+          </PageTabPanel>
+        </PageBody>
+      </PageTabs>
+    </>
+  );
 }

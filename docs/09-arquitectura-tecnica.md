@@ -279,11 +279,14 @@ src/
 │   └── types/                    # tipos de pedido/resposta por domínio, alinhados com os DTO da API
 ├── components/
 │   ├── ui/                       # primitivas shadcn/ui
+│   ├── common/                   # blocos da aplicação: PageHeader, PageTabs, DataTable, StatCard, StatusBadge
+│   ├── charts/                   # gráficos com resumo textual acessível
 │   └── <domínio>/                # componentes de domínio partilhados por várias rotas
-├── config/                       # env validado com zod, URL da API, constantes (rotas, locale, fuso)
+├── config/                       # env (zod), URL da API, constantes e navigation.ts (menu, pesquisa ⌘K, títulos)
 ├── hooks/                        # hooks React partilhados
-├── layouts/                      # shells usados pelos layouts dos grupos de rotas (AppShell, AuthLayout)
+├── layouts/                      # AppShell, AppSidebar, CommandMenu, CreateMenu, AuthLayout, PortalShell
 ├── lib/                          # utilitários (cn, formatKz, formatDate), cliente TanStack Query
+├── mocks/                        # dados de demonstração, substituídos pelos hooks de queries/ quando a API existir
 ├── providers/                    # AppProvider: tema, TanStack Query, nuqs, toasts
 ├── queries/                      # hooks TanStack Query por domínio (query.ts / mutation.ts)
 ├── schemas/                      # esquemas Zod dos formulários por domínio

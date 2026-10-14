@@ -1,102 +1,42 @@
-"use client"
+import { Notification03Icon } from "@hugeicons/core-free-icons";
+import type { Metadata } from "next";
 
-import { Header } from "@/layouts/header"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { Alert02Icon, Cancel01Icon, CheckmarkCircle02Icon, Clock01Icon, InformationCircleIcon, Tick02Icon } from "@hugeicons/core-free-icons"
+import { PageBody, PageHeader, PageTabPanel, PageTabs } from "@/components/common/page";
+import { notifications } from "@/mocks/inbox";
 
-const notifications = [
-  {
-    id: 1,
-    type: "payroll",
-    title: "Folha de pagamento processada",
-    message: "A folha de pagamento de Janeiro foi processada com sucesso para 45 funcionários.",
-    time: "há 2 horas",
-    read: false,
-    icon: CheckmarkCircle02Icon,
-    color: "text-green-600",
-  },
-  {
-    id: 2,
-    type: "alert",
-    title: "Ação necessária: Documentos pendentes",
-    message: "3 funcionários têm documentos pendentes que precisam ser revisados.",
-    time: "há 4 horas",
-    read: false,
-    icon: Alert02Icon,
-    color: "text-yellow-600",
-  },
-  {
-    id: 3,
-    type: "info",
-    title: "Novo funcionário adicionado",
-    message: "Maria Silva foi adicionada ao sistema e precisa de configuração inicial.",
-    time: "há 1 dia",
-    read: true,
-    icon: InformationCircleIcon,
-    color: "text-blue-600",
-  },
-  {
-    id: 4,
-    type: "reminder",
-    title: "Lembrete: Revisão de performance",
-    message: "As avaliações de performance do Q1 vencem em 3 dias.",
-    time: "há 2 dias",
-    read: true,
-    icon: Clock01Icon,
-    color: "text-purple-600",
-  },
-]
+import { NotificationList } from "./_components/notification-list";
+
+export const metadata: Metadata = { title: "Notificações" };
 
 export default function NotificationsPage() {
+  const unread = notifications.filter((item) => !item.read);
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header title="Notificações" subtitle="Central de notificações e alertas" />
-
-      <main className="flex-1 p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h2 className="text-lg font-semibold">Todas as Notificações</h2>
-            <Badge variant="secondary">{notifications.filter((n) => !n.read).length} não lidas</Badge>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <HugeiconsIcon icon={Tick02Icon} className="h-4 w-4 mr-2" />
-              Marcar todas como lidas
-            </Button>
-            <Button variant="outline" size="sm">
-              <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4 mr-2" />
-              Limpar todas
-            </Button>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          {notifications.map((notification) => (
-            <Card key={notification.id} className={`transition-colors ${!notification.read ? "bg-muted/30" : ""}`}>
-              <CardContent className="p-4">
-                <div className="flex items-start gap-4">
-                  <div className={`p-2 rounded-full bg-muted ${notification.color}`}>
-                    <HugeiconsIcon icon={notification.icon} className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-medium">{notification.title}</h3>
-                      <div className="flex items-center gap-2">
-                        {!notification.read && <div className="h-2 w-2 rounded-full bg-blue-600" />}
-                        <span className="text-sm text-muted-foreground">{notification.time}</span>
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{notification.message}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </main>
-    </div>
-  )
+    <>
+      <PageHeader title="Notificações" icon={Notification03Icon} description="Alertas, prazos e actividade recente" />
+      <PageTabs
+        tabs={[
+          { value: "all", label: "Todas", count: notifications.length },
+          { value: "unread", label: "Não lidas", count: unread.length },
+          { value: "deadline", label: "Prazos" },
+          { value: "alert", label: "Alertas" },
+        ]}
+      >
+        <PageBody className="max-w-4xl">
+          <PageTabPanel value="all">
+            <NotificationList items={notifications} />
+          </PageTabPanel>
+          <PageTabPanel value="unread">
+            <NotificationList items={unread} />
+          </PageTabPanel>
+          <PageTabPanel value="deadline">
+            <NotificationList items={notifications.filter((item) => item.kind === "deadline")} />
+          </PageTabPanel>
+          <PageTabPanel value="alert">
+            <NotificationList items={notifications.filter((item) => item.kind === "alert")} />
+          </PageTabPanel>
+        </PageBody>
+      </PageTabs>
+    </>
+  );
 }
