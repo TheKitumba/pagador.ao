@@ -84,21 +84,21 @@ Domínios em produção: `app.pagador.ao` (interface) e `api.pagador.ao` (API).
 | Área | Tecnologia |
 | --- | --- |
 | Framework | NestJS 11, TypeScript (modo `strict`) |
-| Casos de uso e eventos | `@nestjs/cqrs` (CommandBus, QueryBus, EventBus) |
+| Casos de uso e eventos | Uma classe por caso de uso (`execute`), injectada directamente; eventos de domínio gravados na outbox |
 | Base de dados | PostgreSQL 16+ |
 | ORM e migrações | Prisma (apenas na camada de infra-estrutura) |
 | Valores monetários | decimal.js, encapsulado no objecto de valor `Money` |
 | Validação de entrada | Zod (`nestjs-zod`) nos DTO da camada de apresentação |
-| Autenticação | Passport (JWT, OIDC/SAML no plano Empresarial), OTP por SMS, 2FA (TOTP), Argon2id |
+| Autenticação | JWT assinado com **RS256** (`@nestjs/jwt`, par de chaves PEM), OTP por SMS/e-mail, 2FA (TOTP com otplib), Argon2id (`@node-rs/argon2`); OIDC/SAML no plano Empresarial |
 | Contexto do pedido | `nestjs-cls` (AsyncLocalStorage): utilizador, tenant, empresa, id de correlação |
 | Fila e tarefas agendadas | BullMQ (`@nestjs/bullmq`) sobre Redis |
 | Tempo real | Socket.IO (`@nestjs/websockets`) com adaptador Redis |
-| Documentação da API | `@nestjs/swagger` (OpenAPI) |
-| Limites de pedidos | `@nestjs/throttler` com armazenamento em Redis |
-| PDF | `@react-pdf/renderer` (recibos e documentos como componentes React, gerados no worker) |
-| Excel | ExcelJS (importação e exportação) |
-| E-mail | Modelos em React Email, envio por SMTP ou fornecedor transaccional |
-| Armazenamento | Cliente S3 compatível (MinIO em desenvolvimento) |
+| Documentação da API | `@nestjs/swagger` (OpenAPI 3) gerado a partir dos esquemas Zod; Swagger UI em `/v1/docs` |
+| Limites de pedidos | `@nestjs/throttler` (limite estrito nas rotas de autenticação) |
+| PDF | PDFKit (recibos de vencimento) |
+| Importação e exportação | CSV com `;` e BOM UTF-8 (abre directamente no Excel em pt-AO) |
+| E-mail | Nodemailer com o transporte Gmail (palavra-passe de aplicação Google); sem credenciais, os e-mails são apenas registados no log |
+| Armazenamento | MinIO (compatível com S3) através do `@aws-sdk/client-s3`; o bucket é criado no arranque |
 | Gestor de pacotes | pnpm |
 
 ## 9.4 Arquitectura da API: Domain-Driven Design
@@ -138,7 +138,8 @@ analytics: lê projecções publicadas pelos restantes
 
 - **Comunicação síncrona** só através da **fachada pública** do contexto fornecedor (`<contexto>/public/`), que expõe consultas e tipos próprios, nunca entidades de domínio.
 - **Camada anti-corrupção:** o contexto consumidor define uma **porta** com o modelo de que precisa (ex.: `payroll` define `EmploymentSnapshotPort`) e a infra-estrutura implementa-a com um adaptador que chama a fachada do fornecedor. Assim, a folha nunca depende da forma interna do contrato.
-- **Comunicação assíncrona** por **eventos de integração** (ex.: `PayrollRunApproved`, `EmployeeHired`, `ContractTerminated`), gravados numa tabela **outbox** na mesma transacção da alteração e publicados pelo worker em BullMQ. Garante que nenhum evento se perde nem é publicado sem a alteração correspondente.
+- **Comunicação assíncrona** por **eventos de integração** (ex.: `payroll_run.approved`, `employee.created`, `employee.terminated`), gravados numa tabela **outbox** na mesma transacção da alteração e publicados pelo worker em BullMQ. Garante que nenhum evento se perde nem é publicado sem a alteração correspondente.
+- **Resultado de aprovações:** o contexto `approvals` não conhece os restantes; cada contexto regista no arranque um tratador no `ApprovalOutcomeRegistry` (ex.: `payroll` para `PAYROLL_RUN`) que é chamado, na mesma transacção, quando o último passo é decidido.
 
 ### 9.4.3 Camadas de cada contexto
 
@@ -149,7 +150,7 @@ presentation ──► application ──► domain ◄── infrastructure
 | Camada | Contém | Pode depender de |
 | --- | --- | --- |
 | **domain** | Agregados, entidades, objectos de valor, eventos de domínio, serviços de domínio, interfaces de repositório, erros de domínio | Apenas `shared/domain` e bibliotecas puras (decimal.js) |
-| **application** | Casos de uso (commands e queries com os seus handlers), portas para serviços externos, DTO de aplicação, handlers de eventos | `domain` |
+| **application** | Casos de uso (uma classe com `execute`), serviços de consulta, portas para serviços externos, utilitários de leitura (`formatting`, `csv`) | `domain` |
 | **infrastructure** | Repositórios Prisma, mappers, adaptadores (bancos, AGT, INSS, SMS, e-mail, S3), processadores BullMQ | `application`, `domain`, frameworks |
 | **presentation** | Controllers REST, controllers da API pública `v1`, gateways Socket.IO, DTO de entrada/saída, guards | `application` |
 
@@ -162,7 +163,8 @@ A **regra de dependência** é absoluta: as setas apontam para dentro. O domíni
 - **Máquinas de estado explícitas** nos agregados com ciclo de vida (ex.: `PayrollRun`: `DRAFT → CALCULATED → APPROVED → PAID → CLOSED`); uma folha aprovada é imutável.
 - **Objectos de valor** imutáveis e validados na criação: `Money`, `Nif`, `Iban`, `PhoneNumber`, `DateRange`, `EffectivePeriod`, `TenantId`. Dois objectos com os mesmos valores são iguais.
 - **Repositórios** só para raízes de agregado, definidos como interface no domínio e implementados na infra-estrutura. Carregam e gravam o agregado completo.
-- **Consultas (queries)** podem ler directamente da base de dados com modelos de leitura optimizados, sem passar pelo modelo de domínio (CQRS pragmático: um só banco, dois caminhos).
+- **Consultas (queries)** podem ler directamente da base de dados com modelos de leitura optimizados, sem passar pelo modelo de domínio (CQRS pragmático: um só banco, dois caminhos). Só o lado de leitura pode juntar tabelas de vários contextos; o lado de escrita usa sempre as fachadas `public/`.
+- **Catálogos de referência** (estrutura orgânica, rubricas, centros de custo, formação) não têm invariantes que justifiquem agregados: usam serviços de aplicação simples, com autorização e auditoria iguais às dos casos de uso.
 - **Serviços de domínio** para regras que não pertencem a uma só entidade, como o motor de cálculo da folha (9.6).
 
 ### 9.4.5 Linguagem ubíqua
@@ -188,69 +190,56 @@ O código usa nomes em inglês, alinhados com o [modelo de dados](./06-modelo-de
 
 ```
 src/
-├── main.ts                          # arranque do processo API (HTTP + WebSocket)
-├── worker.ts                        # arranque do worker (processadores BullMQ e agendamentos)
-├── app.module.ts
-├── worker.module.ts
-├── shared/
-│   ├── domain/                      # Entity, AggregateRoot, ValueObject, DomainEvent, DomainError
-│   │   └── value-objects/           # Money, Nif, Iban, PhoneNumber, DateRange, TenantId
-│   ├── application/                 # portas transversais: Clock, IdGenerator, UnitOfWork, FileStorage
-│   ├── infrastructure/
-│   │   ├── prisma/                  # PrismaService, transacção com app.tenant_id (RLS)
-│   │   ├── outbox/                  # gravação e publicação de eventos de integração
-│   │   ├── queue/                   # configuração BullMQ
-│   │   ├── storage/                 # adaptador S3
-│   │   └── config/                  # variáveis de ambiente validadas com Zod no arranque
-│   └── presentation/                # filtros de erro, guards, interceptores, decorators
-└── contexts/
-    ├── payroll/
-    │   ├── domain/
-    │   │   ├── payroll-run.aggregate.ts
-    │   │   ├── payslip.entity.ts
-    │   │   ├── pay-item.entity.ts
-    │   │   ├── value-objects/
-    │   │   ├── events/              # payroll-run-approved.event.ts, ...
-    │   │   ├── errors/              # payroll-run-not-editable.error.ts, ...
-    │   │   ├── calculation/         # motor de cálculo e avaliador de fórmulas (puro)
-    │   │   └── payroll-run.repository.ts      # interface
-    │   ├── application/
-    │   │   ├── commands/
-    │   │   │   ├── calculate-payroll-run/     # command + handler
-    │   │   │   └── approve-payroll-run/
-    │   │   ├── queries/
-    │   │   │   └── get-payslip/
-    │   │   ├── ports/               # employment-snapshot.port.ts, attendance-summary.port.ts
-    │   │   └── event-handlers/
-    │   ├── infrastructure/
-    │   │   ├── persistence/         # prisma-payroll-run.repository.ts, payroll-run.mapper.ts
-    │   │   ├── adapters/            # implementação das portas (anti-corrupção)
-    │   │   └── jobs/                # calculate-payroll.processor.ts
-    │   ├── presentation/
-    │   │   ├── http/                # payroll-runs.controller.ts, dto/
-    │   │   └── public-api/          # controllers da API pública v1
-    │   ├── public/                  # fachada exposta aos outros contextos
-    │   └── payroll.module.ts
-    ├── payments/
-    │   └── infrastructure/bank-formats/       # um adaptador por banco
-    ├── tax-compliance/
-    │   └── infrastructure/          # agt/, inss/
-    ├── communication/
-    │   └── infrastructure/          # sms/, email/, whatsapp/
-    ├── workforce/
-    ├── time/
-    ├── identity-access/
-    └── ...                          # restantes contextos com a mesma estrutura
+├── main.ts                          # processo API: HTTP + Socket.IO (adaptador Redis), Swagger em /v1/docs
+├── worker.ts                        # processo worker (BullMQ), sem HTTP
+├── seed.ts                          # dados de referência e empresa de demonstração, através dos casos de uso
+├── app.module.ts                    # guards, pipes, interceptores e filtros globais
+├── health.controller.ts             # GET /v1/health
+├── contexts/
+│   ├── index.ts                     # CONTEXT_MODULES, partilhado pela API, worker e seed
+│   ├── payroll/
+│   │   ├── domain/
+│   │   │   ├── payroll-run.ts                 # agregado e máquina de estados
+│   │   │   ├── default-pay-items.ts
+│   │   │   └── calculation/                   # motor de cálculo, tabelas legais, avaliador de fórmulas (puro)
+│   │   ├── application/
+│   │   │   ├── ports.ts                       # EmploymentSnapshotPort, AttendanceSummaryPort
+│   │   │   ├── payroll-runs.use-cases.ts      # Create/Calculate/Submit/Close… (uma classe por caso de uso)
+│   │   │   ├── compensation.use-cases.ts      # empréstimos, despesas, benefícios
+│   │   │   ├── payslips.service.ts
+│   │   │   └── payroll-config.service.ts      # rubricas e tabelas legais
+│   │   ├── infrastructure/                    # adaptadores das portas, parâmetros legais, PDF do recibo
+│   │   ├── presentation/payroll.controller.ts
+│   │   ├── public/index.ts                    # fachada: PayrollProvisioning, LoanBalances, PayrollRunsFacade
+│   │   └── payroll.module.ts
+│   ├── payments/infrastructure/bank-file-formats.ts   # PS2 (largura fixa) e CSV
+│   ├── approvals/                   # pedidos multi-passo, segregação de funções, ApprovalOutcomeRegistry
+│   ├── workforce/  time/  organization/  identity-access/  tax-compliance/
+│   ├── recruitment/  talent/  employee-relations/  communication/  analytics/  audit/
+│   └── …                            # todos com domain/ application/ infrastructure/ presentation/ public/
+├── portal/                          # GET /v1/me/summary (superfície do portal, sem domínio próprio)
+├── worker/
+│   ├── worker.module.ts
+│   ├── processors.ts                # outbox, cálculo da folha, alertas diários
+│   └── notification-projector.ts    # eventos → notificações, e-mails e evento realtime
+└── shared/
+    ├── domain/                      # AggregateRoot, erros, Money, Nif, Iban, PhoneNumber
+    ├── application/                 # permissões, portas (FileStorage, Mailer, SmsSender), paginação, formatação, CSV
+    ├── infrastructure/
+    │   ├── prisma/                  # PrismaService e Database (transacção com app.tenant_id — RLS)
+    │   ├── audit/                   # registo encadeado por hash (JSON canónico)
+    │   ├── outbox/  queue/  context/
+    │   ├── storage/                 # MinIO/S3
+    │   ├── messaging/               # Nodemailer (Gmail), SMS
+    │   └── config/                  # variáveis de ambiente validadas com Zod no arranque
+    └── presentation/                # AuthGuard, filtro Problem Details, verificação de Origin, Swagger, esquemas Zod comuns
 
 prisma/
 ├── schema.prisma
-├── migrations/
-└── seed.ts                          # províncias, municípios, bancos, tabelas legais, rubricas
+└── migrations/                      # a migração inicial inclui as políticas de Row-Level Security
 ```
 
 As integrações externas não têm pasta própria de topo: cada uma é um adaptador na infra-estrutura do contexto que a usa.
-
-> **Estado actual:** a API contém ainda o esqueleto inicial do NestJS (módulo `user` e `PrismaService` na raiz de `src/`). O módulo `user` passa para `contexts/identity-access` e o `PrismaService` para `shared/infrastructure/prisma`.
 
 ### Interface (`frontend/`)
 
@@ -300,13 +289,13 @@ Aliases: `@/*` → `src/*`, `@api/*` → `src/api/*`. Detalhes e convenções no
 ## 9.6 Regras de camadas
 
 1. **Toda a lógica de negócio vive no domínio e nos casos de uso da API.** O frontend apresenta dados e envia intenções; nunca decide regras.
-2. **Uma só implementação por operação.** O endpoint interno usado pela interface e o endpoint `POST /v1/payroll/runs/{id}/approve` da API pública executam o mesmo comando `ApprovePayrollRunCommand`.
-3. **Controllers finos:** validam a entrada (Zod), constroem o command ou a query e devolvem o resultado mapeado para DTO. Sem `if` de negócio.
-4. **Um caso de uso por classe**, com um único método público `execute`. O handler carrega o agregado, chama o seu comportamento, grava e publica eventos, tudo numa unidade de trabalho.
+2. **Uma só implementação por operação.** A interface, a API pública e o worker chamam a mesma classe de caso de uso (ex.: o worker executa `PayrollRunCalculation` tal como o pedido HTTP).
+3. **Controllers finos:** validam a entrada (Zod), chamam o caso de uso e devolvem o resultado. Sem `if` de negócio.
+4. **Um caso de uso por classe**, com um único método público `execute`. Carrega o agregado, chama o seu comportamento, grava e publica eventos, tudo numa unidade de trabalho: um interceptor abre uma transacção por pedido com `app.tenant_id` definido.
 5. **Autorização no caso de uso, sempre.** Cada handler verifica a permissão (`payroll.approve`) com o contexto do pedido (utilizador, tenant, empresa, papéis). Guards e o `middleware.ts` do frontend tratam apenas de autenticação e redirecção.
 6. **Isolamento de clientes na base de dados.** Cada transacção define `app.tenant_id`; as políticas de Row-Level Security do PostgreSQL impedem leituras entre tenants mesmo em caso de erro no código.
-7. **Fronteiras verificadas pelo lint** (`eslint-plugin-boundaries`): o domínio não importa `@nestjs/*` nem `@prisma/client`; um contexto não importa nada de outro contexto excepto a sua pasta `public/`.
-8. **Modelos Prisma nunca saem da infra-estrutura.** Mappers explícitos convertem registo ↔ agregado; entidades de domínio nunca são serializadas directamente para JSON.
+7. **Fronteiras de camadas:** o domínio não importa `@nestjs/*` nem `@prisma/client`; `application` não importa `presentation`; um contexto só importa de outro a sua pasta `public/`. Hoje verificadas na revisão de código; a regra automática (`eslint-plugin-boundaries`) está por configurar.
+8. **Agregados persistidos por repositórios.** Os agregados com regras (`PayrollRun`, `ApprovalRequest`) são carregados e gravados por repositórios na infra-estrutura, com mappers explícitos. Consultas e serviços de catálogo usam o cliente da transacção (`Database.tx`) e devolvem formas de leitura próprias; entidades de domínio nunca são serializadas directamente para JSON.
 9. **Auditoria transaccional.** Cada mutação escreve o registo de auditoria e os eventos da outbox na mesma transacção da alteração.
 10. **Valores monetários** sempre como `Money` no domínio, `Decimal` na base de dados e string na fronteira JSON; nunca `number`.
 11. **Nenhum cálculo de folha no frontend.** A interface apresenta os resultados e o rasto de cálculo produzidos pela API.
@@ -323,21 +312,21 @@ Aliases: `@/*` → `src/*`, `@api/*` → `src/api/*`. Detalhes e convenções no
 
 ## 9.8 Tarefas em segundo plano e agendadas
 
-| Tarefa | Disparo |
-| --- | --- |
-| `payroll.calculate` | Pedido de cálculo de uma folha grande |
-| `payslips.render-pdf` / `payslips.send` | Evento `PayrollRunApproved` |
-| `payments.generate-bank-file` | Evento `PaymentBatchApproved` |
-| `tax-filings.generate` | Pedido do utilizador / fecho da folha |
-| `imports.process` | Upload de Excel de trabalhadores ou lançamentos |
-| `notifications.deliver` | E-mail, SMS, WhatsApp |
-| `outbox.publish` | Contínua: publica os eventos de integração pendentes |
-| `webhooks.deliver` | Eventos subscritos por clientes da API pública |
-| `alerts.daily` | Diária às 06:00 (Africa/Luanda): contratos a terminar, documentos a expirar, períodos experimentais, prazos AGT/INSS |
-| `attendance.daily-close` | Diária: consolidação dos dias de assiduidade |
+| Tarefa | Disparo | Estado |
+| --- | --- | --- |
+| `outbox.publish` | Contínua (a cada 2 s): publica os eventos pendentes, cada um na transacção do seu tenant | Implementada |
+| `payroll.calculate` | Cálculo de uma folha com mais de 50 trabalhadores | Implementada |
+| `alerts.daily` | Diária às 07:00 (Africa/Luanda): contratos a terminar, documentos a expirar, exames médicos, prazos AGT/INSS | Implementada |
+| `notifications.deliver` | E-mail (Gmail) dos pedidos de aprovação; SMS e WhatsApp mais tarde | E-mail implementado no projector da outbox |
+| `payslips.send` | Envio dos recibos por e-mail | Hoje pedido a pedido (`POST /v1/payslips/{id}/send`) |
+| `imports.process` | Importação de trabalhadores | Hoje síncrona (CSV, com validação prévia `dryRun`) |
+| `webhooks.deliver` | Eventos subscritos por clientes da API pública | Planeada |
+| `attendance.daily-close` | Diária: consolidação dos dias de assiduidade | Planeada |
+
+O projector da outbox (`worker/notification-projector.ts`) converte eventos em notificações para os papéis certos (ex.: `approval.requested` → aprovador do passo, excluindo quem não pode decidir; `payroll_run.paid` → cada trabalhador com recibo), envia o e-mail aos aprovadores e emite `domain.event` para a sala do tenant, que a interface usa para invalidar as suas queries.
 
 - As tarefas agendadas são registadas como *job schedulers* do BullMQ (com fuso `Africa/Luanda`) no arranque do worker.
-- Os processadores são adaptadores de infra-estrutura: recebem a tarefa e executam o command correspondente, sem lógica própria.
+- Os processadores são adaptadores de infra-estrutura: recebem a tarefa e executam o caso de uso correspondente, sem lógica própria.
 - As tarefas são **idempotentes** (podem ser repetidas sem efeitos duplicados) e têm novas tentativas com espera crescente.
 
 ## 9.9 Tempo real
@@ -349,7 +338,8 @@ Aliases: `@/*` → `src/*`, `@api/*` → `src/api/*`. Detalhes e convenções no
 
 ## 9.10 Autenticação entre frontend e API
 
-- A API emite um **token de acesso** JWT de curta duração (15 min) e um **token de renovação** rotativo (guardado com hash na base de dados), ambos em cookies `HttpOnly`, `Secure`, `SameSite=Lax`, no domínio `.pagador.ao`.
+- A API emite um **token de acesso** JWT de curta duração (15 min), assinado com **RS256** (chave privada só na API; a pública basta para validar, por exemplo noutro serviço), e um **token de renovação** rotativo e opaco (guardado com hash SHA-256 na base de dados; a reutilização de um token já rodado revoga a família inteira). Ambos vão em cookies `HttpOnly`, `Secure`, `SameSite=Lax`, no domínio `.pagador.ao`; o de renovação só é enviado para `/v1/auth`.
+- O mesmo token de acesso pode ser enviado em `Authorization: Bearer` por integrações.
 - O frontend chama a API com Axios (`withCredentials: true`). Os tokens nunca são lidos em JavaScript: numa resposta 401, o interceptor pede `POST /auth/refresh` (um único pedido partilhado por todas as chamadas em curso) e repete o pedido original; se a renovação falhar, redirecciona para `/login`.
 - As Server Actions que chamem a API reencaminham o cookie de sessão do pedido.
 - Protecção CSRF nas mutações: `SameSite` mais verificação do cabeçalho `Origin` contra a lista de origens permitidas.
@@ -359,7 +349,7 @@ Aliases: `@/*` → `src/*`, `@api/*` → `src/api/*`. Detalhes e convenções no
 
 - Controllers em `presentation/public-api` de cada contexto, sob o prefixo `/v1`, sobre os mesmos casos de uso da interface.
 - Autenticação OAuth 2.0 (client credentials) com âmbitos; limites de pedidos por cliente.
-- Especificação OpenAPI gerada pelo `@nestjs/swagger` e servida em `/v1/openapi.json`. Os tipos de `frontend/src/api/types` seguem esta especificação e são actualizados sempre que o contrato muda.
+- Especificação OpenAPI gerada pelo `@nestjs/swagger` a partir dos DTO Zod, servida em `/v1/openapi.json`, com Swagger UI em `/v1/docs` (autenticação por cookie ou Bearer). Cada operação tem resumo em português e etiqueta por módulo. Os tipos de `frontend/src/api/types` seguem esta especificação e são actualizados sempre que o contrato muda.
 - Webhooks enviados pelo worker (tarefa `webhooks.deliver`), assinados com HMAC-SHA256.
 
 Os recursos e eventos estão descritos em [07 — Integrações](./07-integracoes.md#79-api-pública-e-webhooks-plano-empresarial).
@@ -405,7 +395,11 @@ Os recursos e eventos estão descritos em [07 — Integrações](./07-integracoe
 - Duas imagens Docker:
   - `pagador-web` — Next.js com `output: "standalone"` (`node server.js`).
   - `pagador-api` — NestJS, com dois comandos: `node dist/main.js` (API) e `node dist/worker.js` (worker).
-- Serviços de suporte: PostgreSQL 16, Redis 7 e armazenamento S3 compatível. Em desenvolvimento, `api.pagador.ao/docker-compose.yml` arranca PostgreSQL e Redis; o MinIO deve ser acrescentado.
+- Serviços de suporte: PostgreSQL 16, Redis 7 e MinIO (S3). O `api.pagador.ao/docker-compose.yml` define a pilha completa:
+  - `postgres`, `redis`, `minio` (consola em `:9001`);
+  - `migrate` — tarefa única: `prisma migrate deploy` e seed;
+  - `api` (porta 3333) e `worker`, ambos com a imagem `pagador-api` e as chaves RS256 montadas de `./keys`.
+- Em desenvolvimento, `pnpm start:dev` arranca só os serviços de suporte e corre a API em modo *watch*; `docker compose up -d --build` corre tudo em contentores.
 - Ambientes: desenvolvimento, QA, pré-produção (dados anonimizados) e produção.
 - Alojamento em infra-estrutura com baixa latência para Luanda e conforme as regras de transferência internacional de dados; opção de instalação dedicada para grandes clientes.
 - CI/CD por projecto: lint (incluindo fronteiras de camadas), verificação de tipos, análise de dependências e build; na API, `prisma migrate deploy`; deploy automático para QA e produção com aprovação manual.

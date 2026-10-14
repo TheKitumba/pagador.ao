@@ -5,11 +5,17 @@ import type {
   RegisterRequest,
   RegisterResponse,
   SessionUser,
+  TwoFactorVerifyRequest,
 } from "../types/auth";
 
 class AuthService {
   async login(payload: LoginRequest) {
     const { data } = await http.post<LoginResponse>("/auth/login", payload);
+    return data;
+  }
+
+  async verifyTwoFactor(payload: TwoFactorVerifyRequest) {
+    const { data } = await http.post<LoginResponse>("/auth/2fa/verify", payload);
     return data;
   }
 

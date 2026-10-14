@@ -8,14 +8,14 @@ export interface ProblemDetails {
   errors?: Record<string, string[]>;
 }
 
+/** Cursor page: pass `nextCursor` back as `cursor` until it is null. */
 export interface PaginatedResponse<T> {
   data: T[];
-  page: number;
-  pageSize: number;
-  total: number;
+  nextCursor: string | null;
 }
 
 export interface PaginationParams {
-  page?: number;
-  pageSize?: number;
+  cursor?: string;
+  /** 1–200, default 50. */
+  limit?: number;
 }
