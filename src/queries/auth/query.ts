@@ -7,7 +7,7 @@ export const authKeys = {
   session: () => [...authKeys.all, "session"] as const,
 };
 
-export function useSession() {
+export function useSessionQuery() {
   return useQuery({
     queryKey: authKeys.session(),
     queryFn: () => authService.me(),

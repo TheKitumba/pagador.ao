@@ -53,7 +53,7 @@ import {
 import { footerNav, type NavItem, navGroups, primaryNav } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 import { companies, currentUser } from "@/mocks/people";
-import { useLogout } from "@/queries/auth/mutation";
+import { useLogoutMutation } from "@/queries/auth/mutation";
 import { toastService } from "@/services/toast.service";
 import { useActiveCompany } from "@/stores/company.store";
 import { useCommandMenu } from "@/stores/command-menu.store";
@@ -186,7 +186,7 @@ function ThemeMenu() {
 
 function UserMenu() {
   const router = useRouter();
-  const logout = useLogout();
+  const logout = useLogoutMutation();
   const [confirmLogout, setConfirmLogout] = useState(false);
 
   return (

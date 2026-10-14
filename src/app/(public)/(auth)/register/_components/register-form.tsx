@@ -11,13 +11,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ROUTES } from "@/config/app";
-import { useRegister } from "@/queries/auth/mutation";
+import { useRegisterMutation } from "@/queries/auth/mutation";
 import { companySizes, provinces, type RegisterFormValues, registerSchema } from "@/schemas/auth";
 import { toastService } from "@/services/toast.service";
 
 export function RegisterForm() {
   const router = useRouter();
-  const register = useRegister();
+  const register = useRegisterMutation();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),

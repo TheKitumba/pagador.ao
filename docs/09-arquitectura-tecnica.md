@@ -285,10 +285,10 @@ src/
 ├── config/                       # env (zod), URL da API, constantes e navigation.ts (menu, pesquisa ⌘K, títulos)
 ├── hooks/                        # hooks React partilhados
 ├── layouts/                      # AppShell, AppSidebar, CommandMenu, CreateMenu, AuthLayout, PortalShell
-├── lib/                          # utilitários (cn, formatKz, formatDate), cliente TanStack Query
+├── lib/                          # utilitários (cn, formatKz, formatDate), queryClient global do TanStack Query
 ├── mocks/                        # dados de demonstração, substituídos pelos hooks de queries/ quando a API existir
 ├── providers/                    # AppProvider: tema, TanStack Query, nuqs, toasts
-├── queries/                      # hooks TanStack Query por domínio (query.ts / mutation.ts)
+├── queries/                      # hooks TanStack Query por domínio: use…Query (query.ts) e use…Mutation (mutation.ts)
 ├── schemas/                      # esquemas Zod dos formulários por domínio
 ├── services/                     # serviços de interface (toast, ...)
 ├── stores/                       # estado global (@bentoo/state-man)

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/config/app";
-import { useLogin } from "@/queries/auth/mutation";
+import { useLoginMutation } from "@/queries/auth/mutation";
 import { type LoginFormValues, loginSchema } from "@/schemas/auth";
 import { toastService } from "@/services/toast.service";
 
@@ -23,7 +23,7 @@ function safeRedirectPath(next: string | null) {
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const login = useLogin();
+  const login = useLoginMutation();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),

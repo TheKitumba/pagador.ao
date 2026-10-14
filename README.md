@@ -94,10 +94,10 @@ src/
 ├── config/                 # env (zod), URL da API, constantes e navigation.ts (menu, pesquisa, títulos)
 ├── hooks/                  # Hooks React partilhados
 ├── layouts/                # AppShell, AppSidebar, CommandMenu, CreateMenu, AuthLayout, PortalShell
-├── lib/                    # cn, formatação (formatKz, formatDate…), cliente do TanStack Query
+├── lib/                    # cn, formatação (formatKz, formatDate…), queryClient global do TanStack Query
 ├── mocks/                  # Dados de demonstração até existirem os endpoints da API
 ├── providers/              # AppProvider (tema, query, nuqs, toast)
-├── queries/                # Hooks TanStack Query por domínio (query.ts / mutation.ts)
+├── queries/                # Hooks TanStack Query por domínio: use…Query (query.ts) / use…Mutation (mutation.ts)
 ├── schemas/                # Esquemas Zod dos formulários por domínio
 ├── services/               # Serviços de interface (toast, …)
 ├── stores/                 # Estado global (@bentoo/state-man)
@@ -112,6 +112,7 @@ src/
 - **Fatias verticais** — uma funcionalidade percorre `api/types` → `api/services` → `schemas` → `queries` → `_components` da rota. A fatia `auth` serve de referência.
 - **Sem regras de negócio na interface** — cálculos, permissões e validações de negócio são da API; a interface apresenta e envia intenções.
 - **Sessão** — os tokens ficam em cookies `HttpOnly` definidos pela API; o interceptor do Axios renova a sessão numa resposta 401 e repete o pedido.
+- **Queries e mutations** — hooks do TanStack Query em `src/queries/<domínio>/query.ts` e `mutation.ts`, sempre com o sufixo do tipo: `useSessionQuery`, `useLoginMutation`, `useLogoutMutation`. As mutations usam o `queryClient` global de [src/lib/query-client.ts](src/lib/query-client.ts) (não `useQueryClient()`) para actualizar ou invalidar a cache.
 - **Navegação** — [src/config/navigation.ts](src/config/navigation.ts) é a única fonte do menu lateral, da pesquisa global e das descrições das páginas. Uma nova página entra aí primeiro.
 - **Páginas** — todas seguem o mesmo esqueleto: `PageHeader` (título, pesquisa, acção principal) → `PageTabs` (separadores ligados a `?tab=`) → `PageBody`. Pesquisa e filtros ficam no URL (`?q=`, `?dept=`) via nuqs, para poderem ser partilhados.
 - **Dados de demonstração** — `src/mocks` substitui a API enquanto os endpoints não existem. Ao ligar um ecrã à API, troque o import do mock pelo hook de `src/queries/<domínio>`.
