@@ -85,7 +85,7 @@ Os formatos devem ser versionados, porque a AGT os actualiza com frequência.
 - Autenticação: OAuth 2.0 (client credentials) com âmbitos (`employees:read`, `payroll:read`, `attendance:write`, ...).
 - Formato: JSON, datas ISO 8601, valores monetários como string decimal (`"371800.70"`).
 - Paginação por cursor; limites de pedidos por cliente.
-- Documentação OpenAPI 3.1 e ambiente de testes (sandbox).
+- Documentação OpenAPI e ambiente sandbox para integradores.
 
 Recursos principais:
 

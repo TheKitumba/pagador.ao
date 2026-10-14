@@ -2,7 +2,7 @@
 
 **pagador.ao** — Sistema completo de gestão de recursos humanos e folha de pagamento para empresas angolanas.
 
-Esta pasta reúne a documentação funcional e técnica do produto. Serve de referência para a equipa de produto, desenvolvimento, qualidade e para parceiros (contabilistas, consultores de RH e juristas) que validam as regras de negócio.
+Esta pasta reúne a documentação funcional e técnica do produto. Serve de referência para a equipa de produto e desenvolvimento e para parceiros (contabilistas, consultores de RH e juristas) que validam as regras de negócio.
 
 ## Índice
 
@@ -16,7 +16,7 @@ Esta pasta reúne a documentação funcional e técnica do produto. Serve de ref
 | 06 | [Modelo de dados](./06-modelo-de-dados.md) | Entidades principais, atributos e relações |
 | 07 | [Integrações](./07-integracoes.md) | Bancos, AGT, INSS, contabilidade, assiduidade biométrica, API |
 | 08 | [Requisitos não funcionais](./08-requisitos-nao-funcionais.md) | Segurança, desempenho, disponibilidade, acessibilidade, localização |
-| 09 | [Arquitectura técnica](./09-arquitectura-tecnica.md) | Aplicação full-stack em Next.js (interface, backend e API), worker, infra-estrutura e convenções |
+| 09 | [Arquitectura técnica](./09-arquitectura-tecnica.md) | Interface Next.js (`frontend/`), API NestJS em DDD e Clean Architecture (`api.pagador.ao/`), worker, infra-estrutura e código limpo |
 | 10 | [Mapa de navegação e ecrãs](./10-mapa-de-ecras.md) | Rotas da aplicação e conteúdo de cada ecrã |
 | 11 | [Roteiro de entregas](./11-roteiro.md) | Fases, MVP e prioridades |
 | 12 | [Glossário](./12-glossario.md) | Termos de RH, fiscais e técnicos |

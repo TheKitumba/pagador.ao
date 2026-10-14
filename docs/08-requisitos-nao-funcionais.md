@@ -8,7 +8,7 @@
 | RNF-SEG-02 | Dados em repouso cifrados (AES-256); campos sensíveis (salário, IBAN, saúde) com cifra adicional ao nível da aplicação e gestão de chaves num KMS. |
 | RNF-SEG-03 | Palavras-passe guardadas com Argon2id. |
 | RNF-SEG-04 | 2FA obrigatório para papéis com acesso a dados financeiros. |
-| RNF-SEG-05 | Isolamento entre clientes (tenants) garantido na base de dados e testado automaticamente. |
+| RNF-SEG-05 | Isolamento entre clientes (tenants) garantido na base de dados (Row-Level Security). |
 | RNF-SEG-06 | Protecção contra as vulnerabilidades do OWASP Top 10 (injecção, XSS, CSRF, controlo de acessos, etc.). |
 | RNF-SEG-07 | Testes de intrusão por entidade independente pelo menos uma vez por ano e antes de cada lançamento principal. |
 | RNF-SEG-08 | Registo de auditoria imutável (ver M25), conservado pelo prazo legal. |
@@ -72,22 +72,14 @@
 - Terminologia local: "trabalhador", "entidade empregadora", "vencimento", "subsídio", "Bilhete de Identidade", "NIF", "província", "município", "bairro".
 - Todos os textos da interface externalizados em ficheiros de tradução (nada codificado nos componentes).
 
-## 8.8 Qualidade e testes
-
-- Cobertura de testes unitários de **pelo menos 95% no motor de cálculo** da folha, incluindo todos os limites de escalões do IRT e casos de fronteira.
-- Conjunto de **casos de referência validados por um técnico de contas**, executado em cada alteração do motor ou das tabelas legais.
-- Testes end-to-end dos fluxos críticos: admissão → folha → pagamento → mapas fiscais.
-- Testes de regressão visual dos recibos e documentos.
-- Testes de carga antes de cada fim de mês com alterações relevantes.
-
-## 8.9 Observabilidade
+## 8.8 Observabilidade
 
 - Logs estruturados, sem dados pessoais em claro.
 - Métricas e rastreio distribuído (OpenTelemetry).
 - Alertas sobre erros, latência e falhas de tarefas em segundo plano (geração de recibos, envio de e-mails).
 - Painel de saúde por cliente para a equipa de suporte.
 
-## 8.10 Alojamento e residência de dados
+## 8.9 Alojamento e residência de dados
 
 - Preferência por alojamento em Angola ou em região com baixa latência para Luanda, de acordo com os requisitos de transferência internacional de dados da Lei n.º 22/11 e com eventuais exigências de clientes do sector público, bancário ou petrolífero.
 - Opção de **instalação dedicada** (single-tenant ou on-premises) para grandes clientes com requisitos regulatórios próprios.

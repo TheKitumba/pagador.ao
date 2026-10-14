@@ -1,6 +1,6 @@
 # 03 — Módulos funcionais
 
-Este documento descreve cada módulo do sistema: objectivo, funcionalidades, regras de negócio e saídas. Os identificadores (`RF-XX-NN`) permitem rastrear requisitos até às tarefas de desenvolvimento e aos testes.
+Este documento descreve cada módulo do sistema: objectivo, funcionalidades, regras de negócio e saídas. Os identificadores (`RF-XX-NN`) permitem rastrear requisitos até às tarefas de desenvolvimento.
 
 ## Mapa de módulos
 

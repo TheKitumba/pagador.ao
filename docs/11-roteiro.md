@@ -9,8 +9,9 @@ As fases estão ordenadas por valor para o cliente e por dependências técnicas
 - Tabelas de referência (províncias, municípios, bancos) e **tabelas legais versionadas**.
 - Registo de auditoria.
 - Design system (componentes, modo claro/escuro, formatação `pt-AO`).
-- Base full-stack em Next.js: camada `server/`, Prisma + PostgreSQL com RLS, Auth.js, worker com pg-boss, armazenamento de ficheiros (ver [09](./09-arquitectura-tecnica.md)).
-- Pipeline de CI/CD e ambientes (imagem Docker única para web e worker).
+- API NestJS em `api.pagador.ao/` com a estrutura de contextos delimitados (DDD), Prisma + PostgreSQL com RLS, autenticação por JWT em cookie, worker com BullMQ e Redis, armazenamento de ficheiros (ver [09](./09-arquitectura-tecnica.md)).
+- Frontend Next.js em `frontend/` com a arquitectura em fatias verticais (`api/` com Axios, `queries/` com TanStack Query, `schemas/`, `_components/` por rota).
+- Pipeline de CI/CD e ambientes (imagens Docker `pagador-web` e `pagador-api`).
 
 ## Fase 1 — MVP: folha de pagamento em conformidade (10–12 semanas)
 
@@ -76,7 +77,7 @@ Objectivo: uma pequena empresa angolana consegue processar e pagar salários, e 
 | --- | --- |
 | Alteração legislativa súbita (ex.: OGE) | Tabelas legais versionadas; publicação central; reprocessamento |
 | Formatos de ficheiro de bancos/AGT/INSS mudam sem aviso | Catálogo de formatos configurável; parcerias directas com bancos |
-| Erros de cálculo com impacto fiscal | Testes de referência validados; pré-folha; comparação mês a mês; aprovação dupla |
+| Erros de cálculo com impacto fiscal | Casos de referência validados por técnico de contas; pré-folha; comparação mês a mês; aprovação dupla |
 | Conectividade fraca no terreno | Páginas leves; envios idempotentes; quiosque no estabelecimento; SMS como canal alternativo; ponto offline na futura aplicação móvel |
 | Resistência à mudança (folhas de cálculo) | Assistente de migração; formação; suporte na primeira folha |
 | Fraude interna (alteração de IBAN, trabalhadores fantasma) | Segregação de funções; alertas; validação de dados bancários; auditoria |

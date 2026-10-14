@@ -167,7 +167,7 @@ rubrica("R001") * 0.02 * min(floor(trabalhador.antiguidade_anos / 3), 5)
 valor_hora() * 1.5 * assiduidade.horas_extra_util
 ```
 
-Cada fórmula é validada na gravação e testada com um trabalhador de exemplo antes de ser activada.
+Cada fórmula é validada na gravação e pré-visualizada com um trabalhador de exemplo antes de ser activada.
 
 ## 4.6 Exemplo de cálculo
 
@@ -229,8 +229,6 @@ Cada fórmula é validada na gravação e testada com um trabalhador de exemplo 
 | **Líquido a receber** | **311 273,81** |
 | Encargo patronal com a Segurança Social (8%) | 29 744,06 |
 | **Custo total para a empresa** | **401 544,76** |
-
-Este exemplo deve ser incluído como **teste automatizado** do motor de cálculo, a par de casos de fronteira de cada escalão de IRT.
 
 ## 4.7 Validações e alertas antes da aprovação
 
