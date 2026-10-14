@@ -189,3 +189,25 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Printing (payslips, declarations): only the document, no app chrome. */
+@media print {
+  [data-sidebar],
+  .peer[data-state],
+  header,
+  nav,
+  [data-sonner-toaster],
+  button {
+    display: none !important;
+  }
+
+  body,
+  main {
+    background: white !important;
+  }
+
+  .shadow-card,
+  .shadow-overlay {
+    box-shadow: none !important;
+  }
+}

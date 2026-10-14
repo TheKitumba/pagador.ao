@@ -1,40 +1,48 @@
 "use client";
 
-import { HugeiconsIcon } from "@hugeicons/react";
 import { SentIcon } from "@hugeicons/core-free-icons";
 
-import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/common/confirm-dialog";
+import { HeaderButton } from "@/components/common/header-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toastService } from "@/services/toast.service";
 
-/** Submit for approval; blocked while there are blocking alerts, and says why. */
+/** Submit for approval; blocked (with the reason) while there are blocking alerts, otherwise asks for confirmation. */
 export function SubmitRunButton({ blocking }: { blocking: number }) {
-  const disabled = blocking > 0;
-  const reason = `Resolva ${blocking} ${blocking === 1 ? "alerta bloqueante" : "alertas bloqueantes"} antes de submeter.`;
+  const label = "Submeter para aprovação";
 
-  const button = (
-    <Button
-      aria-disabled={disabled}
-      aria-describedby={disabled ? "submit-blocked-reason" : undefined}
-      className={disabled ? "cursor-not-allowed opacity-60" : undefined}
-      onClick={() =>
-        disabled
-          ? toastService.error("Não é possível submeter", reason)
-          : toastService.success("Folha submetida para aprovação", "O aprovador financeiro foi notificado.")
-      }
-    >
-      <HugeiconsIcon icon={SentIcon} aria-hidden />
-      <span className="hidden sm:inline">Submeter para aprovação</span>
-      <span className="sr-only sm:hidden">Submeter para aprovação</span>
-    </Button>
-  );
-
-  if (!disabled) return button;
+  if (blocking > 0) {
+    const reason = `Resolva ${blocking} ${blocking === 1 ? "alerta bloqueante" : "alertas bloqueantes"} antes de submeter.`;
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <HeaderButton
+            icon={SentIcon}
+            label={label}
+            aria-disabled
+            aria-describedby="submit-blocked-reason"
+            className="cursor-not-allowed opacity-60"
+            onClick={() => toastService.error("Não é possível submeter", reason)}
+          />
+        </TooltipTrigger>
+        <TooltipContent id="submit-blocked-reason">{reason}</TooltipContent>
+      </Tooltip>
+    );
+  }
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>{button}</TooltipTrigger>
-      <TooltipContent id="submit-blocked-reason">{reason}</TooltipContent>
-    </Tooltip>
+    <ConfirmDialog
+      title="Submeter a folha para aprovação?"
+      description={
+        <>
+          <p>Depois de submetida, a folha deixa de poder ser editada até ser aprovada ou devolvida.</p>
+          <p>Quem calculou a folha não a pode aprovar: o pedido segue para o aprovador financeiro.</p>
+        </>
+      }
+      confirmLabel="Submeter"
+      successTitle="Folha submetida para aprovação"
+      successDescription="O aprovador financeiro foi notificado."
+      trigger={<HeaderButton icon={SentIcon} label={label} />}
+    />
   );
 }

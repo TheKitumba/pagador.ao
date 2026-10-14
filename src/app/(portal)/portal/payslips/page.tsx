@@ -1,8 +1,6 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Download04Icon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
-import { Button } from "@/components/ui/button";
+import { DownloadButton } from "@/components/common/action-buttons";
 import { formatKz, formatMonth } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Os meus recibos" };
@@ -30,9 +28,18 @@ export default function PortalPayslipsPage() {
               </p>
             </div>
             <p className="text-right font-semibold tabular">{formatKz(payslip.net)}</p>
-            <Button variant="outline" size="icon" aria-label={`Descarregar recibo de ${formatMonth(payslip.period)}`}>
-              <HugeiconsIcon icon={Download04Icon} />
-            </Button>
+            <DownloadButton
+              iconOnly
+              label={`Descarregar recibo de ${formatMonth(payslip.period)}`}
+              filename={`recibo-${payslip.period.slice(0, 7)}.txt`}
+              content={[
+                "Kianda Logística, Lda. — NIF 5417089621",
+                `Recibo de vencimento — ${formatMonth(payslip.period)}`,
+                "Trabalhador: Ana Mateus (n.º 0001)",
+                `Total ilíquido: ${formatKz(payslip.gross)}`,
+                `Líquido a receber: ${formatKz(payslip.net)}`,
+              ].join("\n")}
+            />
           </li>
         ))}
       </ul>

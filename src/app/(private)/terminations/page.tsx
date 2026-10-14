@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { PlusSignIcon, UserRemove01Icon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -10,6 +9,9 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatKz } from "@/lib/format";
 import { terminationStatusLabel, terminations } from "@/mocks/compliance";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Cessações" };
 
@@ -23,11 +25,7 @@ export default function TerminationsPage() {
         icon={UserRemove01Icon}
         description="Saídas, acertos de contas e documentos de cessação"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Iniciar cessação</span>
-            <span className="sr-only sm:hidden">Iniciar cessação</span>
-          </Button>
+          <FormDialog {...forms.termination} openParam="new" trigger={<HeaderButton icon={PlusSignIcon} label="Iniciar cessação" />} />
         }
       />
       <PageBody>

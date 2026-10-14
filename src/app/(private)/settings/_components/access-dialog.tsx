@@ -15,6 +15,7 @@ import {
 import { type FormEvent, useState } from "react";
 import { toast } from "sonner";
 
+import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { PersonAvatar } from "@/components/common/person-avatar";
 import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { company } from "@/mocks/people";
 
@@ -42,6 +44,44 @@ export const roles = [
 ] as const;
 
 type Role = (typeof roles)[number];
+
+const roleDescriptions: Record<Role, string> = {
+  "Administrador da conta": "Gere a subscrição, as empresas, os utilizadores e as configurações.",
+  "Gestor de RH": "Gere todo o ciclo do trabalhador, incluindo salários e dados bancários.",
+  "Técnico de RH": "Operações do dia-a-dia, sem acesso a salários.",
+  "Processador salarial": "Lançamentos, cálculo e revisão da folha. Não aprova a folha que calcula.",
+  "Aprovador financeiro": "Aprova folhas e lotes de pagamento.",
+  "Chefia directa": "Aprova pedidos da equipa e avalia o desempenho.",
+  Recrutador: "Gere vagas e candidatos.",
+  "Auditor externo": "Apenas leitura de mapas, relatórios e auditoria, com prazo de validade.",
+};
+
+function RolesSheet() {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="sm">
+          <HugeiconsIcon icon={Shield01Icon} aria-hidden />
+          Gerir papéis
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="w-full overflow-y-auto sm:max-w-md">
+        <SheetHeader className="text-left">
+          <SheetTitle>Papéis e permissões</SheetTitle>
+          <SheetDescription>Permissões sensíveis (salários, saúde, disciplina) são atribuídas explicitamente.</SheetDescription>
+        </SheetHeader>
+        <ul className="mt-6 space-y-3">
+          {roles.map((role) => (
+            <li key={role} className="rounded-lg border p-3">
+              <p className="text-sm font-medium">{role}</p>
+              <p className="mt-0.5 text-sm text-muted-foreground">{roleDescriptions[role]}</p>
+            </li>
+          ))}
+        </ul>
+      </SheetContent>
+    </Sheet>
+  );
+}
 
 interface Member {
   name: string;
@@ -223,21 +263,24 @@ export function AccessDialog() {
                         setMembers((current) => current.map((item) => (item.email === member.email ? { ...item, role } : item)))
                       }
                     />
-                    <Button
-                      variant="outline"
-                      size="icon-sm"
-                      disabled={member.locked}
-                      aria-label={`Remover acesso de ${member.name}`}
-                      onClick={() => {
+                    <ConfirmDialog
+                      tone="danger"
+                      title={`Remover o acesso de ${member.pending ? member.email : member.name}?`}
+                      description={<p>A pessoa deixa de conseguir entrar na conta da {company.shortName}. As sessões abertas são terminadas de imediato.</p>}
+                      confirmLabel="Remover acesso"
+                      onConfirm={() => {
                         setMembers((current) => current.filter((item) => item.email !== member.email));
                         toast.success("Acesso removido", {
                           description: member.email,
                           action: { label: "Anular", onClick: () => setMembers((current) => [...current, member]) },
                         });
                       }}
-                    >
-                      <HugeiconsIcon icon={Delete02Icon} />
-                    </Button>
+                      trigger={
+                        <Button variant="outline" size="icon-sm" disabled={member.locked} aria-label={`Remover acesso de ${member.name}`}>
+                          <HugeiconsIcon icon={Delete02Icon} />
+                        </Button>
+                      }
+                    />
                   </li>
                 ))}
               </ul>
@@ -256,12 +299,7 @@ export function AccessDialog() {
           </div>
 
           <div className="flex items-center justify-between gap-3 border-t bg-muted/30 px-6 py-3">
-            <Button variant="outline" size="sm" asChild>
-              <a href="/settings?tab=roles">
-                <HugeiconsIcon icon={Shield01Icon} aria-hidden />
-                Gerir papéis
-              </a>
-            </Button>
+            <RolesSheet />
             <Button size="sm" onClick={copyLink}>
               <HugeiconsIcon icon={Copy01Icon} aria-hidden />
               Copiar ligação

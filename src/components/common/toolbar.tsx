@@ -1,16 +1,8 @@
 "use client";
 
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
-import {
-  ArrowUpDownIcon,
-  Download04Icon,
-  FilterHorizontalIcon,
-  GridViewIcon,
-  Search01Icon,
-  Tick02Icon,
-} from "@hugeicons/core-free-icons";
+import { FilterHorizontalIcon, Search01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { parseAsString, useQueryState } from "nuqs";
-import type React from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -102,33 +94,4 @@ export function FilterMenu({ label, param, options, icon = FilterHorizontalIcon 
 export function useFilter(param: string) {
   const [value] = useQueryState(param, parseAsString);
   return value;
-}
-
-export function ToolbarButton({
-  icon,
-  children,
-  onClick,
-}: {
-  icon: IconSvgElement;
-  children: React.ReactNode;
-  onClick?: () => void;
-}) {
-  return (
-    <Button variant="outline" size="sm" onClick={onClick}>
-      <HugeiconsIcon icon={icon} aria-hidden />
-      {children}
-    </Button>
-  );
-}
-
-export function SortButton() {
-  return <ToolbarButton icon={ArrowUpDownIcon}>Ordenar</ToolbarButton>;
-}
-
-export function ExportButton() {
-  return <ToolbarButton icon={Download04Icon}>Exportar</ToolbarButton>;
-}
-
-export function ViewButton() {
-  return <ToolbarButton icon={GridViewIcon}>Vista</ToolbarButton>;
 }

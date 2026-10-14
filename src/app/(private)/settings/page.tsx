@@ -1,5 +1,4 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowRight01Icon, Settings02Icon } from "@hugeicons/core-free-icons";
+import { Settings02Icon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
 import { DescriptionList, ProgressBar, SectionCard } from "@/components/common/cards";
@@ -10,10 +9,13 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { company, currentUser, establishments } from "@/mocks/people";
 
+import { FormDialog } from "@/components/common/form-dialog";
+import { forms } from "@/config/forms";
+
 import { AccessDialog, roles } from "./_components/access-dialog";
+import { SaveForm, ToggleRow, WorkflowSheet } from "./_components/settings-controls";
 
 export const metadata: Metadata = { title: "Configurações" };
 
@@ -58,22 +60,6 @@ function Field({ id, label, defaultValue, type = "text", hint }: { id: string; l
   );
 }
 
-function ToggleRow({ id, label, description, defaultChecked }: { id: string; label: string; description: string; defaultChecked?: boolean }) {
-  return (
-    <div className="flex items-start justify-between gap-6 py-3">
-      <div>
-        <Label htmlFor={id} className="text-sm font-medium">
-          {label}
-        </Label>
-        <p id={`${id}-desc`} className="text-sm text-muted-foreground">
-          {description}
-        </p>
-      </div>
-      <Switch id={id} defaultChecked={defaultChecked} aria-describedby={`${id}-desc`} />
-    </div>
-  );
-}
-
 export default function SettingsPage() {
   return (
     <>
@@ -93,7 +79,7 @@ export default function SettingsPage() {
         <PageBody className="max-w-5xl">
           <PageTabPanel value="company" className="space-y-6">
             <SectionCard title="Dados da entidade empregadora" description="Aparecem nos recibos, contratos e mapas fiscais">
-              <form className="grid gap-4 sm:grid-cols-2">
+              <SaveForm successTitle="Dados da empresa guardados" className="grid gap-4 sm:grid-cols-2">
                 <Field id="company-name" label="Denominação social" defaultValue={company.name} />
                 <Field id="company-nif" label="NIF" defaultValue={company.nif} />
                 <Field id="company-inss" label="N.º de contribuinte do INSS" defaultValue="0012 4478 90" />
@@ -104,16 +90,22 @@ export default function SettingsPage() {
                 <div className="flex justify-end sm:col-span-2">
                   <Button type="submit">Guardar alterações</Button>
                 </div>
-              </form>
+              </SaveForm>
             </SectionCard>
             <SectionCard title="Estabelecimentos" description="Usados na assiduidade, nos centros de custo e nos relatórios" contentClassName="px-2 pb-2">
               <ul className="divide-y">
                 {establishments.map((site) => (
                   <li key={site} className="flex items-center justify-between px-3 py-3 text-sm">
                     <span className="font-medium">{site}</span>
-                    <Button variant="ghost" size="sm">
-                      Editar<span className="sr-only"> {site}</span>
-                    </Button>
+                    <FormDialog
+                      {...forms.establishment}
+                      fields={forms.establishment.fields.map((field) => (field.name === "name" ? { ...field, defaultValue: site } : field))}
+                      trigger={
+                        <Button variant="ghost" size="sm">
+                          Editar<span className="sr-only"> {site}</span>
+                        </Button>
+                      }
+                    />
                   </li>
                 ))}
               </ul>
@@ -122,13 +114,13 @@ export default function SettingsPage() {
 
           <PageTabPanel value="profile" className="space-y-6">
             <SectionCard title="Dados pessoais">
-              <form className="grid gap-4 sm:grid-cols-2">
+              <SaveForm successTitle="Perfil guardado" className="grid gap-4 sm:grid-cols-2">
                 <Field id="me-name" label="Nome" defaultValue={currentUser.name} />
                 <Field id="me-email" label="E-mail" type="email" defaultValue={currentUser.email} />
                 <div className="flex justify-end sm:col-span-2">
                   <Button type="submit">Guardar</Button>
                 </div>
-              </form>
+              </SaveForm>
             </SectionCard>
             <SectionCard title="Segurança">
               <div className="divide-y">
@@ -199,9 +191,7 @@ export default function SettingsPage() {
                   <li key={workflow.request} className="flex items-center gap-4 px-3 py-3">
                     <span className="w-48 shrink-0 text-sm font-medium">{workflow.request}</span>
                     <span className="flex-1 text-sm text-muted-foreground">{workflow.flow}</span>
-                    <Button variant="ghost" size="icon-sm" aria-label={`Editar fluxo de ${workflow.request}`}>
-                      <HugeiconsIcon icon={ArrowRight01Icon} />
-                    </Button>
+                    <WorkflowSheet request={workflow.request} flow={workflow.flow} />
                   </li>
                 ))}
               </ul>

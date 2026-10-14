@@ -3,7 +3,9 @@ import type { Metadata } from "next";
 import { DescriptionList, SectionCard } from "@/components/common/cards";
 import { PersonAvatar } from "@/components/common/person-avatar";
 import { SensitiveValue } from "@/components/common/sensitive-value";
+import { FormDialog } from "@/components/common/form-dialog";
 import { Button } from "@/components/ui/button";
+import { forms } from "@/config/forms";
 import { formatDate } from "@/lib/format";
 import { findEmployee } from "@/mocks/people";
 
@@ -23,7 +25,7 @@ export default function PortalProfilePage() {
           </p>
         </div>
       </div>
-      <SectionCard title="Dados pessoais" action={<Button variant="outline" size="sm">Pedir alteração</Button>}>
+      <SectionCard title="Dados pessoais" action={<FormDialog {...forms.personalChange} trigger={<Button variant="outline" size="sm">Pedir alteração</Button>} />}>
         <DescriptionList
           items={[
             { label: "Data de nascimento", value: formatDate(me.birthDate) },

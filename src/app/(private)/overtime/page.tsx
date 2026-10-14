@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Alert02Icon, PlusSignIcon, Timer02Icon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -12,6 +11,9 @@ import { requestStatusTone } from "@/components/common/status-maps";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
 import { overtimeRequests, requestStatusLabel } from "@/mocks/time";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Horas extra" };
 
@@ -29,11 +31,7 @@ export default function OvertimePage() {
         icon={Timer02Icon}
         description="Pedidos, aprovação e limites legais"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Registar horas extra</span>
-            <span className="sr-only sm:hidden">Registar horas extra</span>
-          </Button>
+          <FormDialog {...forms.overtime} trigger={<HeaderButton icon={PlusSignIcon} label="Registar horas extra" />} />
         }
       />
       <PageBody>

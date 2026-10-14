@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 
+import { ConfirmDialog } from "./confirm-dialog";
 import { StatusBadge } from "./status-badge";
 
 /** Approve / reject a pending request inline, with an undo in the confirmation toast. */
@@ -31,9 +32,19 @@ export function DecisionButtons({ subject }: { subject: string }) {
 
   return (
     <div className="flex justify-end gap-1.5">
-      <Button variant="outline" size="icon-sm" onClick={() => decide("rejected")} aria-label={`Rejeitar: ${subject}`}>
-        <HugeiconsIcon icon={Cancel01Icon} />
-      </Button>
+      <ConfirmDialog
+        tone="danger"
+        title="Rejeitar pedido?"
+        description={<p>{subject}. O requerente é notificado com o motivo.</p>}
+        reason={{ label: "Motivo da rejeição", required: true }}
+        confirmLabel="Rejeitar"
+        onConfirm={() => decide("rejected")}
+        trigger={
+          <Button variant="outline" size="icon-sm" aria-label={`Rejeitar: ${subject}`}>
+            <HugeiconsIcon icon={Cancel01Icon} />
+          </Button>
+        }
+      />
       <Button size="icon-sm" onClick={() => decide("approved")} aria-label={`Aprovar: ${subject}`}>
         <HugeiconsIcon icon={Tick02Icon} />
       </Button>

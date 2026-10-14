@@ -1,10 +1,12 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { FileImportIcon, UserAdd01Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
+import { UserAdd01Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { PageBody, PageHeader, PageTabPanel, PageTabs } from "@/components/common/page";
-import { ExportButton, FilterMenu, SearchField } from "@/components/common/toolbar";
+import { DownloadButton } from "@/components/common/action-buttons";
+import { FilterMenu, SearchField } from "@/components/common/toolbar";
+import { ImportDialog } from "./_components/import-dialog";
 import { Button } from "@/components/ui/button";
 import { departments, type EmployeeStatus, employees, establishments } from "@/mocks/people";
 
@@ -29,10 +31,7 @@ export default function EmployeesPage() {
         description="Dossiê digital de cada trabalhador"
         actions={
           <>
-            <Button variant="outline" className="hidden md:inline-flex">
-              <HugeiconsIcon icon={FileImportIcon} aria-hidden />
-              Importar Excel
-            </Button>
+            <ImportDialog />
             <Button asChild>
               <Link href="/employees/new">
                 <HugeiconsIcon icon={UserAdd01Icon} aria-hidden />
@@ -54,7 +53,11 @@ export default function EmployeesPage() {
             <SearchField label="Pesquisar trabalhadores" placeholder="Nome, n.º, NIF ou cargo" />
             <FilterMenu label="Departamento" param="dept" options={departments.map((d) => ({ value: d.name, label: d.name }))} />
             <FilterMenu label="Local" param="site" options={establishments.map((e) => ({ value: e, label: e }))} />
-            <ExportButton />
+            <DownloadButton
+              filename="trabalhadores-kianda.csv"
+              label="Exportar"
+              rows={employees.map((e) => ({ numero: e.number, nome: e.name, cargo: e.position, departamento: e.department, local: e.establishment, admissao: e.hireDate, nif: e.nif, estado: e.status }))}
+            />
           </>
         }
       >

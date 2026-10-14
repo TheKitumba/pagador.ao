@@ -3,12 +3,24 @@ import { BeachIcon, Coins01Icon, File02Icon, Invoice01Icon } from "@hugeicons/co
 import type { Metadata } from "next";
 
 import { QuickActionCard } from "@/components/common/cards";
+import { FormDialog } from "@/components/common/form-dialog";
 import { StatusBadge } from "@/components/common/status-badge";
 import { requestStatusTone } from "@/components/common/status-maps";
+import { forms } from "@/config/forms";
 import { formatDate } from "@/lib/format";
 import { requestStatusLabel, type RequestStatus } from "@/mocks/time";
 
 export const metadata: Metadata = { title: "Pedidos" };
+
+/** The worker's own requests: same forms as the back office, without the "Trabalhador" field. */
+const withoutEmployee = <T extends { fields: { name: string }[] }>(spec: T) => ({ ...spec, fields: spec.fields.filter((field) => field.name !== "employee") });
+
+const portalForms = {
+  leave: { ...withoutEmployee(forms.leave), title: "Pedir férias ou falta", successDescription: "Enviado à sua chefia directa." },
+  advance: { ...withoutEmployee(forms.advance), title: "Pedir adiantamento", fields: withoutEmployee(forms.advance).fields.filter((field) => field.name !== "type") },
+  expense: { ...withoutEmployee(forms.reimbursement), title: "Pedir reembolso" },
+  letter: { ...forms.declaration, title: "Pedir declaração", submitLabel: "Pedir", successTitle: "Pedido enviado", successDescription: "Recebe a declaração no portal quando estiver pronta." },
+};
 
 const myRequests: { title: string; detail: string; date: string; status: RequestStatus; icon: typeof BeachIcon }[] = [
   { title: "Férias de 21/12 a 08/01", detail: "12 dias úteis", date: "2026-09-02", status: "approved", icon: BeachIcon },
@@ -31,6 +43,10 @@ export default function PortalRequestsPage() {
           <QuickActionCard href="/portal/requests?new=letter" icon={File02Icon} title="Declaração" description="Rendimentos ou de serviço" />
         </div>
       </section>
+      <FormDialog {...portalForms.leave} openParam="new" openValue="leave" />
+      <FormDialog {...portalForms.advance} openParam="new" openValue="advance" />
+      <FormDialog {...portalForms.expense} openParam="new" openValue="expense" />
+      <FormDialog {...portalForms.letter} openParam="new" openValue="letter" />
       <section aria-labelledby="my-requests" className="space-y-3">
         <h2 id="my-requests" className="text-sm font-medium text-muted-foreground">
           Os meus pedidos

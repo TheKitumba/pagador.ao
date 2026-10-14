@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { PlusSignIcon, TaskDaily01Icon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -10,6 +9,9 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { requestStatusTone } from "@/components/common/status-maps";
 import { Button } from "@/components/ui/button";
 import { requestStatusLabel, timesheets } from "@/mocks/time";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Folhas de horas" };
 
@@ -49,11 +51,7 @@ export default function TimesheetsPage() {
         icon={TaskDaily01Icon}
         description="Horas por projecto, submissão e aprovação"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Nova folha de horas</span>
-            <span className="sr-only sm:hidden">Nova folha de horas</span>
-          </Button>
+          <FormDialog {...forms.timesheet} trigger={<HeaderButton icon={PlusSignIcon} label="Nova folha de horas" />} />
         }
       />
       <PageTabs

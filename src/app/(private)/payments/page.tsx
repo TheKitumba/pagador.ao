@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Alert02Icon, BankIcon, Download04Icon, FileExportIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -9,6 +8,9 @@ import { StatusBadge, type Tone } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { formatKz, formatKzCompact } from "@/lib/format";
 import { type BatchStatus, batchStatusLabel, paymentBatches } from "@/mocks/finance";
+import { DownloadButton } from "@/components/common/action-buttons";
+import { ConfirmDialog } from "@/components/common/confirm-dialog";
+import { HeaderButton } from "@/components/common/header-button";
 
 export const metadata: Metadata = { title: "Pagamentos" };
 
@@ -22,6 +24,15 @@ const batchTone: Record<BatchStatus, Tone> = {
 };
 
 type Batch = (typeof paymentBatches)[number];
+
+/** Simplified fixed-width preview of a bank transfer file. The API generates the real per-bank format. */
+function bankFile(batch: Batch) {
+  return [
+    `H|${batch.bank}|${batch.format}|KIANDA LOGISTICA LDA|5417089621|${batch.id}`,
+    `T|${batch.instructions}|${batch.amount.toFixed(2)}`,
+    "# Pré-visualização gerada pelo pagador.ao — não submeter ao banco",
+  ].join("\n");
+}
 
 function BatchTable({ rows }: { rows: Batch[] }) {
   return (
@@ -50,9 +61,13 @@ function BatchTable({ rows }: { rows: Batch[] }) {
           header: "Ficheiro",
           align: "right",
           cell: (row) => (
-            <Button variant="ghost" size="icon-sm" aria-label={`Descarregar ficheiro do lote ${row.id}`} disabled={row.status === "draft"}>
-              <HugeiconsIcon icon={Download04Icon} />
-            </Button>
+            <DownloadButton
+              iconOnly
+              variant="ghost"
+              label={`Descarregar ficheiro do lote ${row.id}`}
+              filename={`${row.id}.txt`}
+              content={bankFile(row)}
+            />
           ),
         },
       ]}
@@ -70,11 +85,19 @@ export default function PaymentsPage() {
         icon={BankIcon}
         description="Lotes de pagamento, ficheiros bancários e reconciliação"
         actions={
-          <Button>
-            <HugeiconsIcon icon={FileExportIcon} aria-hidden />
-            <span className="hidden sm:inline">Gerar ficheiros bancários</span>
-            <span className="sr-only sm:hidden">Gerar ficheiros bancários</span>
-          </Button>
+          <ConfirmDialog
+            title="Gerar ficheiros bancários?"
+            description={
+              <>
+                <p>São criados 3 lotes (BFA, BAI e BIC) com 248 transferências da folha de outubro.</p>
+                <p>Segregação de funções: quem gera os lotes não os pode aprovar. Graça Mbemba recebe o pedido de aprovação.</p>
+              </>
+            }
+            confirmLabel="Gerar lotes"
+            successTitle="Lotes gerados"
+            successDescription="Enviados para aprovação do aprovador financeiro."
+            trigger={<HeaderButton icon={FileExportIcon} label="Gerar ficheiros bancários" />}
+          />
         }
       />
       <PageTabs

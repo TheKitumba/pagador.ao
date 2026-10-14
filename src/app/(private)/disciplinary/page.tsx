@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { JusticeScale01Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -9,6 +8,9 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
 import { disciplinaryCases } from "@/mocks/management";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Disciplina" };
 
@@ -20,11 +22,7 @@ export default function DisciplinaryPage() {
         icon={JusticeScale01Icon}
         description="Processos disciplinares e prazos"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Abrir processo</span>
-            <span className="sr-only sm:hidden">Abrir processo</span>
-          </Button>
+          <FormDialog {...forms.disciplinary} trigger={<HeaderButton icon={PlusSignIcon} label="Abrir processo" />} />
         }
       />
       <PageBody>

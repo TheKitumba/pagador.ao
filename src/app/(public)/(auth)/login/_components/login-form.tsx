@@ -13,6 +13,8 @@ import { useLogin } from "@/queries/auth/mutation";
 import { type LoginFormValues, loginSchema } from "@/schemas/auth";
 import { toastService } from "@/services/toast.service";
 
+import { SmsSignInDialog, SsoSignInDialog } from "./alternative-sign-in";
+
 // Only same-site paths, so `?next=` cannot be used as an open redirect.
 function safeRedirectPath(next: string | null) {
   return next?.startsWith("/") && !next.startsWith("//") ? next : ROUTES.home;
@@ -84,12 +86,8 @@ export function LoginForm() {
         <span className="h-px flex-1 bg-border" />
       </div>
       <div className="grid gap-2">
-        <Button variant="outline" className="h-10" type="button">
-          Entrar com telemóvel e código SMS
-        </Button>
-        <Button variant="outline" className="h-10" type="button">
-          Entrar com SSO da empresa
-        </Button>
+        <SmsSignInDialog />
+        <SsoSignInDialog />
       </div>
 
       <p className="mt-8 text-center text-sm text-muted-foreground">

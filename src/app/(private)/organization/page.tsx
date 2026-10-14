@@ -7,8 +7,10 @@ import { DataTable } from "@/components/common/data-table";
 import { PageBody, PageHeader, PageTabPanel, PageTabs } from "@/components/common/page";
 import { AvatarStack, PersonAvatar } from "@/components/common/person-avatar";
 import { StatusBadge } from "@/components/common/status-badge";
-import { Button } from "@/components/ui/button";
 import { departments, employees, establishments, positions } from "@/mocks/people";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Organização" };
 
@@ -22,11 +24,7 @@ export default function OrganizationPage() {
         icon={Building03Icon}
         description="Estabelecimentos, departamentos, cargos e centros de custo"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Nova unidade</span>
-            <span className="sr-only sm:hidden">Nova unidade</span>
-          </Button>
+          <FormDialog {...forms.orgUnit} trigger={<HeaderButton icon={PlusSignIcon} label="Nova unidade" />} />
         }
       />
       <PageTabs

@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { EmptyState } from "@/components/common/cards";
+import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { PersonAvatar } from "@/components/common/person-avatar";
 import { StatusBadge } from "@/components/common/status-badge";
 import { useFilter } from "@/components/common/toolbar";
@@ -70,10 +71,24 @@ export function ApprovalList({ items }: { items: Approval[] }) {
               </p>
             </div>
             <div className="flex shrink-0 gap-2 sm:flex-col lg:flex-row">
-              <Button variant="outline" size="sm" onClick={() => decide(approval, "rejected")} aria-label={`Rejeitar: ${approval.title}`}>
-                <HugeiconsIcon icon={Cancel01Icon} aria-hidden />
-                Rejeitar
-              </Button>
+              <ConfirmDialog
+                tone="danger"
+                title="Rejeitar pedido?"
+                description={
+                  <p>
+                    {approval.title} — {approval.requester}. O requerente é notificado com o motivo.
+                  </p>
+                }
+                reason={{ label: "Motivo da rejeição", required: true }}
+                confirmLabel="Rejeitar"
+                onConfirm={() => decide(approval, "rejected")}
+                trigger={
+                  <Button variant="outline" size="sm" aria-label={`Rejeitar: ${approval.title}`}>
+                    <HugeiconsIcon icon={Cancel01Icon} aria-hidden />
+                    Rejeitar
+                  </Button>
+                }
+              />
               <Button size="sm" onClick={() => decide(approval, "approved")} aria-label={`Aprovar: ${approval.title}`}>
                 <HugeiconsIcon icon={Tick02Icon} aria-hidden />
                 Aprovar

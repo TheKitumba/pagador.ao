@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Alert02Icon, PlusSignIcon, Shield01Icon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -10,6 +9,9 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
 import { accidents, medicalExams, ppe } from "@/mocks/management";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Saúde e segurança" };
 
@@ -27,11 +29,7 @@ export default function SafetyPage() {
         icon={Shield01Icon}
         description="Exames médicos, acidentes e EPI"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Registar acidente</span>
-            <span className="sr-only sm:hidden">Registar acidente</span>
-          </Button>
+          <FormDialog {...forms.accident} trigger={<HeaderButton icon={PlusSignIcon} label="Registar acidente" />} />
         }
       />
       <PageTabs

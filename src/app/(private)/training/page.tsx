@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Mortarboard01Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -10,6 +9,9 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
 import { certificates, trainings } from "@/mocks/growth";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Formação" };
 
@@ -21,11 +23,7 @@ export default function TrainingPage() {
         icon={Mortarboard01Icon}
         description="Plano de formação, acções e certificados"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Nova acção</span>
-            <span className="sr-only sm:hidden">Nova acção</span>
-          </Button>
+          <FormDialog {...forms.training} trigger={<HeaderButton icon={PlusSignIcon} label="Nova acção" />} />
         }
       />
       <PageTabs

@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { PlusSignIcon, StarIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -8,6 +7,9 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { formatDateShort } from "@/lib/format";
 import { feedbackItems } from "@/mocks/growth";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Feedback" };
 
@@ -19,11 +21,7 @@ export default function FeedbackPage() {
         icon={StarIcon}
         description="Feedback contínuo e reconhecimento"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Dar feedback</span>
-            <span className="sr-only sm:hidden">Dar feedback</span>
-          </Button>
+          <FormDialog {...forms.feedback} trigger={<HeaderButton icon={PlusSignIcon} label="Dar feedback" />} />
         }
       />
       <PageBody className="max-w-3xl">

@@ -1,6 +1,5 @@
 "use client";
 
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Alert02Icon,
   Calendar03Icon,

@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Coins01Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -11,6 +10,9 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { formatKz, formatKzCompact } from "@/lib/format";
 import { loans } from "@/mocks/finance";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Empréstimos" };
 
@@ -24,11 +26,7 @@ export default function LoansPage() {
         icon={Coins01Icon}
         description="Adiantamentos, empréstimos e penhoras"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Novo adiantamento</span>
-            <span className="sr-only sm:hidden">Novo adiantamento</span>
-          </Button>
+          <FormDialog {...forms.advance} openParam="new" trigger={<HeaderButton icon={PlusSignIcon} label="Novo adiantamento" />} />
         }
       />
       <PageBody>

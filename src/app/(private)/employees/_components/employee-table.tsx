@@ -119,7 +119,7 @@ export function EmployeeTable({ status }: { status?: EmployeeStatus }) {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="text-destructive focus:text-destructive">
-                  <Link href="/terminations">Iniciar cessação</Link>
+                  <Link href="/terminations?new=1">Iniciar cessação</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

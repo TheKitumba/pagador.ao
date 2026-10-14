@@ -1,5 +1,5 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft01Icon, Download04Icon, Mail01Icon, MoneyBag02Icon } from "@hugeicons/core-free-icons";
+import { ArrowLeft01Icon, Mail01Icon, MoneyBag02Icon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import { formatKz, formatMonth } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { findPayrollRun, findPayslip, payslipLines } from "@/mocks/payroll";
+import { PrintButton } from "@/components/common/action-buttons";
+import { ConfirmDialog } from "@/components/common/confirm-dialog";
+import { HeaderButton } from "@/components/common/header-button";
 
 type Params = { params: Promise<{ runId: string; id: string }> };
 
@@ -73,15 +76,15 @@ export default async function PayslipPage({ params }: Params) {
         }
         actions={
           <>
-            <Button variant="outline" className="hidden md:inline-flex">
-              <HugeiconsIcon icon={Mail01Icon} aria-hidden />
-              Enviar ao trabalhador
-            </Button>
-            <Button>
-              <HugeiconsIcon icon={Download04Icon} aria-hidden />
-              <span className="hidden sm:inline">Descarregar PDF</span>
-              <span className="sr-only sm:hidden">Descarregar PDF</span>
-            </Button>
+            <ConfirmDialog
+              title="Enviar recibo ao trabalhador?"
+              description={<p>O recibo de {formatMonth(run.period)} é enviado para {payslip.employee.email} e fica disponível no portal do trabalhador.</p>}
+              confirmLabel="Enviar"
+              successTitle="Recibo enviado"
+              successDescription={payslip.employee.email}
+              trigger={<HeaderButton variant="outline" icon={Mail01Icon} label="Enviar ao trabalhador" className="hidden md:inline-flex" collapse={false} />}
+            />
+            <PrintButton />
           </>
         }
       />

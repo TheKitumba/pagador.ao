@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Invoice03Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -8,6 +7,9 @@ import { StatusBadge, type Tone } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatKz } from "@/lib/format";
 import { type InvoiceStatus, invoices } from "@/mocks/finance";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Faturas" };
 
@@ -57,11 +59,7 @@ export default function InvoicesPage() {
         icon={Invoice03Icon}
         description="Facturas de prestadores e da subscrição"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Registar factura</span>
-            <span className="sr-only sm:hidden">Registar factura</span>
-          </Button>
+          <FormDialog {...forms.invoice} trigger={<HeaderButton icon={PlusSignIcon} label="Registar factura" />} />
         }
       />
       <PageTabs

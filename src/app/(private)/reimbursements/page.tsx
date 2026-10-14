@@ -8,10 +8,12 @@ import { PageBody, PageHeader, PageTabPanel, PageTabs } from "@/components/commo
 import { PersonCell } from "@/components/common/person-avatar";
 import { StatusBadge } from "@/components/common/status-badge";
 import { requestStatusTone } from "@/components/common/status-maps";
-import { Button } from "@/components/ui/button";
 import { formatDate, formatKz } from "@/lib/format";
 import { reimbursements } from "@/mocks/finance";
 import { requestStatusLabel } from "@/mocks/time";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Reembolsos" };
 
@@ -68,11 +70,7 @@ export default function ReimbursementsPage() {
         icon={Invoice01Icon}
         description="Despesas, ajudas de custo e pagamento"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Novo pedido</span>
-            <span className="sr-only sm:hidden">Novo pedido</span>
-          </Button>
+          <FormDialog {...forms.reimbursement} openParam="new" trigger={<HeaderButton icon={PlusSignIcon} label="Novo pedido" />} />
         }
       />
       <PageTabs

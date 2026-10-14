@@ -25,6 +25,8 @@ import { findPayrollRun, payrollAlerts, payrollRunStatusLabel, payrollRuns, pays
 
 import { PayslipTable } from "./_components/payslip-table";
 import { SubmitRunButton } from "./_components/submit-run-button";
+import { ConfirmDialog } from "@/components/common/confirm-dialog";
+import { HeaderButton } from "@/components/common/header-button";
 
 type Params = { params: Promise<{ runId: string }> };
 
@@ -71,10 +73,19 @@ export default async function PayrollRunPage({ params }: Params) {
         actions={
           run.status === "closed" ? null : (
             <>
-              <Button variant="outline" className="hidden md:inline-flex">
-                <HugeiconsIcon icon={CalculatorIcon} aria-hidden />
-                Recalcular
-              </Button>
+              <ConfirmDialog
+                title="Recalcular a folha?"
+                description={
+                  <>
+                    <p>Os {run.employees} recibos são recalculados com os lançamentos e as tabelas legais actuais. O cálculo anterior é substituído.</p>
+                    <p>Folhas grandes são calculadas em segundo plano; recebe uma notificação quando terminar.</p>
+                  </>
+                }
+                confirmLabel="Recalcular"
+                successTitle="Cálculo iniciado"
+                successDescription="Vai receber uma notificação quando terminar."
+                trigger={<HeaderButton variant="outline" icon={CalculatorIcon} label="Recalcular" className="hidden md:inline-flex" collapse={false} />}
+              />
               <SubmitRunButton blocking={run.blocking} />
             </>
           )

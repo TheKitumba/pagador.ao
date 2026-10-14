@@ -13,6 +13,9 @@ import { PayrollStepper } from "@/components/payroll/payroll-stepper";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatKz, formatKzCompact } from "@/lib/format";
 import { payrollRunStatusLabel, payrollRuns, payrollTrend } from "@/mocks/payroll";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Folha de pagamento" };
 
@@ -27,11 +30,7 @@ export default function PayrollPage() {
         icon={MoneyBag02Icon}
         description="Processamentos mensais, recibos e aprovação"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Novo processamento</span>
-            <span className="sr-only sm:hidden">Novo processamento</span>
-          </Button>
+          <FormDialog {...forms.payrollRun} trigger={<HeaderButton icon={PlusSignIcon} label="Novo processamento" />} />
         }
       />
       <PageBody>

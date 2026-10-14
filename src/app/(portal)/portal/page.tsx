@@ -1,10 +1,11 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowRight01Icon, BeachIcon, Coins01Icon, Invoice01Icon, Megaphone01Icon } from "@hugeicons/core-free-icons";
+import { ArrowRight01Icon, BeachIcon, Coins01Icon, Invoice01Icon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { IconTile, QuickActionCard, SectionCard } from "@/components/common/cards";
 import { formatDate, formatKz } from "@/lib/format";
+
+import { NoticeSheet } from "./_components/notice-sheet";
 
 import { ClockCard } from "./_components/clock-card";
 
@@ -48,16 +49,19 @@ export default function PortalHomePage() {
       <SectionCard title="Avisos" contentClassName="px-2 pb-2">
         <ul>
           {[
-            { title: "Feriado: Dia da Independência Nacional", detail: "11 de novembro · a empresa encerra" },
-            { title: "Exames médicos periódicos", detail: "Marque até 30/10 com a Clínica Girassol" },
+            {
+              title: "Feriado: Dia da Independência Nacional",
+              detail: "11 de novembro · a empresa encerra",
+              body: "No dia 11 de novembro a empresa encerra em todos os estabelecimentos. As equipas de turno no Armazém do Lobito recebem a escala especial da chefia.",
+            },
+            {
+              title: "Exames médicos periódicos",
+              detail: "Marque até 30/10 com a Clínica Girassol",
+              body: "Os exames periódicos são obrigatórios e pagos pela empresa. Marque pelo telefone +244 222 000 111 indicando o seu número de trabalhador.",
+            },
           ].map((notice) => (
-            <li key={notice.title} className="flex items-center gap-3 rounded-lg px-3 py-2.5">
-              <IconTile icon={Megaphone01Icon} />
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-medium">{notice.title}</span>
-                <span className="block text-xs text-muted-foreground">{notice.detail}</span>
-              </span>
-              <HugeiconsIcon icon={ArrowRight01Icon} className="size-4 text-muted-foreground" aria-hidden />
+            <li key={notice.title}>
+              <NoticeSheet title={notice.title} detail={notice.detail} body={notice.body} />
             </li>
           ))}
         </ul>

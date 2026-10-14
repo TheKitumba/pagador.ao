@@ -1,5 +1,4 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Calendar03Icon, DocumentValidationIcon, Download04Icon, FileExportIcon } from "@hugeicons/core-free-icons";
+import { Calendar03Icon, DocumentValidationIcon, FileExportIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
 import { SectionCard, StatCard, StatGrid } from "@/components/common/cards";
@@ -9,6 +8,10 @@ import { StatusBadge, type Tone } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatKz, formatKzCompact } from "@/lib/format";
 import { type FilingStatus, filingStatusLabel, fiscalDeadlines, taxFilings } from "@/mocks/compliance";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
+import { DownloadButton } from "@/components/common/action-buttons";
 
 export const metadata: Metadata = { title: "Mapas fiscais" };
 
@@ -49,9 +52,13 @@ function FilingTable({ rows }: { rows: Filing[] }) {
           header: "Ficheiro",
           align: "right",
           cell: (row) => (
-            <Button variant="ghost" size="icon-sm" disabled={row.status === "upcoming"} aria-label={`Descarregar ${row.name}`}>
-              <HugeiconsIcon icon={Download04Icon} />
-            </Button>
+            <DownloadButton
+              iconOnly
+              variant="ghost"
+              label={`Descarregar ${row.name}`}
+              filename={`${row.id}.csv`}
+              rows={[{ entidade: "Kianda Logística, Lda.", nif: "5417089621", obrigacao: row.name, periodo: row.period, prazo: row.due, valor: row.amount.toFixed(2) }]}
+            />
           ),
         },
       ]}
@@ -67,11 +74,7 @@ export default function TaxFilingsPage() {
         icon={DocumentValidationIcon}
         description="IRT para a AGT, folha de remunerações do INSS e calendário fiscal"
         actions={
-          <Button>
-            <HugeiconsIcon icon={FileExportIcon} aria-hidden />
-            <span className="hidden sm:inline">Gerar mapas</span>
-            <span className="sr-only sm:hidden">Gerar mapas</span>
-          </Button>
+          <FormDialog {...forms.taxFiling} trigger={<HeaderButton icon={FileExportIcon} label="Gerar mapas" />} />
         }
       />
       <PageTabs

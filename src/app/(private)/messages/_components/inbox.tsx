@@ -2,11 +2,13 @@
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon, Attachment01Icon, Megaphone01Icon, SentIcon } from "@hugeicons/core-free-icons";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useRef, useState } from "react";
 
+import { FormDialog } from "@/components/common/form-dialog";
 import { PersonAvatar } from "@/components/common/person-avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { forms } from "@/config/forms";
 import { cn } from "@/lib/utils";
 import { conversations, messages as initialMessages } from "@/mocks/inbox";
 import { currentUser } from "@/mocks/people";
@@ -15,6 +17,7 @@ export function Inbox() {
   const [activeId, setActiveId] = useState<string | null>(conversations[0].id);
   const [messages, setMessages] = useState(initialMessages);
   const [draft, setDraft] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
   const active = conversations.find((conversation) => conversation.id === activeId);
 
   const send = (event: FormEvent) => {
@@ -32,10 +35,15 @@ export function Inbox() {
       >
         <div className="flex items-center justify-between border-b px-4 py-3">
           <h2 className="text-sm font-semibold">Conversas</h2>
-          <Button variant="outline" size="sm">
-            <HugeiconsIcon icon={Megaphone01Icon} aria-hidden />
-            Comunicado
-          </Button>
+          <FormDialog
+            {...forms.announcement}
+            trigger={
+              <Button variant="outline" size="sm">
+                <HugeiconsIcon icon={Megaphone01Icon} aria-hidden />
+                Comunicado
+              </Button>
+            }
+          />
         </div>
         <ul className="overflow-y-auto p-2">
           {conversations.map((conversation) => (
@@ -100,9 +108,22 @@ export function Inbox() {
               })}
             </ol>
             <form onSubmit={send} className="flex items-center gap-2 border-t bg-card p-3">
-              <Button type="button" variant="ghost" size="icon" aria-label="Anexar ficheiro">
+              <Button type="button" variant="ghost" size="icon" aria-label="Anexar ficheiro" onClick={() => fileRef.current?.click()}>
                 <HugeiconsIcon icon={Attachment01Icon} />
               </Button>
+              <input
+                ref={fileRef}
+                type="file"
+                className="sr-only"
+                tabIndex={-1}
+                aria-hidden
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) return;
+                  setMessages((current) => [...current, { author: currentUser.name, time: "Agora", text: `Anexo: ${file.name}` }]);
+                  event.target.value = "";
+                }}
+              />
               <Input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Escreva uma mensagem…" aria-label="Mensagem" />
               <Button type="submit" disabled={!draft.trim()}>
                 <HugeiconsIcon icon={SentIcon} aria-hidden />

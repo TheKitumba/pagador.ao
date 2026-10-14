@@ -19,15 +19,20 @@ import { PersonAvatar } from "@/components/common/person-avatar";
 import { SensitiveValue } from "@/components/common/sensitive-value";
 import { StatusBadge } from "@/components/common/status-badge";
 import { employeeStatusTone, requestStatusTone } from "@/components/common/status-maps";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
 import { Button } from "@/components/ui/button";
+import { forms } from "@/config/forms";
 import { formatDate, formatKz } from "@/lib/format";
 import { auditLog } from "@/mocks/management";
-import { employeeStatusLabel, findEmployee } from "@/mocks/people";
+import { departments, employeeStatusLabel, establishments, findEmployee, positions } from "@/mocks/people";
 import { payrollRuns, payslips } from "@/mocks/payroll";
 import { leaveBalances, leaveRequests, requestStatusLabel } from "@/mocks/time";
 import { goals, trainings } from "@/mocks/growth";
 
 type Params = { params: Promise<{ id: string }> };
+
+const positionTitles = positions.map((position) => position.title);
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const employee = findEmployee((await params).id);
@@ -58,14 +63,31 @@ export default async function EmployeePage({ params }: Params) {
         }
         actions={
           <>
-            <Button variant="outline" className="hidden md:inline-flex">
-              <HugeiconsIcon icon={File02Icon} aria-hidden />
-              Emitir declaração
-            </Button>
-            <Button>
-              <HugeiconsIcon icon={PencilEdit02Icon} aria-hidden />
-              Editar
-            </Button>
+            <FormDialog
+              {...forms.declaration}
+              title={`Emitir declaração — ${employee.name}`}
+              trigger={<HeaderButton variant="outline" icon={File02Icon} label="Emitir declaração" className="hidden md:inline-flex" collapse={false} />}
+            />
+            <FormDialog
+              variant="sheet"
+              title={`Editar ${employee.name}`}
+              description="Alterações a dados bancários e salariais ficam registadas na auditoria"
+              submitLabel="Guardar alterações"
+              successTitle="Dados actualizados"
+              successDescription={employee.name}
+              fields={[
+                { name: "name", label: "Nome completo", required: true, full: true, defaultValue: employee.name },
+                { name: "email", label: "E-mail", type: "email", defaultValue: employee.email },
+                { name: "phone", label: "Telemóvel", type: "tel", required: true, defaultValue: employee.phone },
+                { name: "position", label: "Cargo", type: "select", required: true, options: [...new Set([...positionTitles, employee.position])], defaultValue: employee.position },
+                { name: "department", label: "Departamento", type: "select", required: true, options: departments.map((d) => d.name), defaultValue: employee.department },
+                { name: "establishment", label: "Estabelecimento", type: "select", required: true, full: true, options: establishments, defaultValue: employee.establishment },
+                { name: "manager", label: "Chefia directa", type: "employee", defaultValue: employee.manager ?? "" },
+                { name: "bank", label: "Banco", defaultValue: employee.bank },
+                { name: "iban", label: "IBAN", full: true, required: true, defaultValue: employee.iban },
+              ]}
+              trigger={<HeaderButton icon={PencilEdit02Icon} label="Editar" />}
+            />
           </>
         }
       />

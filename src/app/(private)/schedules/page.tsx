@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon, ArrowRight01Icon, PlusSignIcon, TimeScheduleIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -8,6 +7,11 @@ import { PersonCell } from "@/components/common/person-avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { roster, scheduleTemplates, shifts, weekDays } from "@/mocks/time";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
+
+import { WeekNavigator } from "./_components/week-navigator";
 
 export const metadata: Metadata = { title: "Escalas" };
 
@@ -27,11 +31,7 @@ export default function SchedulesPage() {
         icon={TimeScheduleIcon}
         description="Horários e escalas de turnos"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Novo horário</span>
-            <span className="sr-only sm:hidden">Novo horário</span>
-          </Button>
+          <FormDialog {...forms.schedule} trigger={<HeaderButton icon={PlusSignIcon} label="Novo horário" />} />
         }
       />
       <PageTabs
@@ -43,15 +43,7 @@ export default function SchedulesPage() {
         <PageBody>
           <PageTabPanel value="roster" className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="icon-sm" aria-label="Semana anterior">
-                  <HugeiconsIcon icon={ArrowLeft01Icon} />
-                </Button>
-                <h2 className="text-sm font-semibold">Armazém do Lobito · 12 a 18 de outubro de 2026</h2>
-                <Button variant="outline" size="icon-sm" aria-label="Semana seguinte">
-                  <HugeiconsIcon icon={ArrowRight01Icon} />
-                </Button>
-              </div>
+              <WeekNavigator site="Armazém do Lobito" />
               <ul className="flex flex-wrap gap-2" aria-label="Legenda dos turnos">
                 {shifts.map((shift, index) => (
                   <li key={shift} className={cn("rounded-md border px-2 py-0.5 text-xs", shiftStyle[index])}>

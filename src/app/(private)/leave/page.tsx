@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { BeachIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -12,6 +11,9 @@ import { requestStatusTone } from "@/components/common/status-maps";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
 import { leaveBalances, leaveRequests, requestStatusLabel } from "@/mocks/time";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Férias e faltas" };
 
@@ -54,11 +56,7 @@ export default function LeavePage() {
         icon={BeachIcon}
         description="Pedidos, saldos e mapa de férias"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Registar ausência</span>
-            <span className="sr-only sm:hidden">Registar ausência</span>
-          </Button>
+          <FormDialog {...forms.leave} openParam="new" trigger={<HeaderButton icon={PlusSignIcon} label="Registar ausência" />} />
         }
       />
       <PageTabs

@@ -1,6 +1,7 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Agreement01Icon, Alert02Icon, Calendar03Icon, File02Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { StatCard, StatGrid } from "@/components/common/cards";
 import { DataTable } from "@/components/common/data-table";
@@ -10,8 +11,22 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
 import { type ContractAlert, contractAlerts, employees } from "@/mocks/people";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
+
+import { ContractActions } from "./_components/contract-actions";
 
 export const metadata: Metadata = { title: "Contratos" };
+
+const contractTemplates: { name: string; type?: string; href?: string }[] = [
+  { name: "Contrato por tempo indeterminado", type: "Por tempo indeterminado" },
+  { name: "Contrato a termo certo", type: "Por tempo determinado" },
+  { name: "Contrato de estágio profissional", type: "Estágio profissional" },
+  { name: "Contrato de trabalhador estrangeiro", type: "Trabalhador estrangeiro" },
+  { name: "Adenda de alteração salarial", href: "/employees" },
+  { name: "Acordo de cessação", href: "/terminations?new=1" },
+];
 
 const alertLabel: Record<ContractAlert, string> = {
   ending: "Termo do contrato",
@@ -40,14 +55,7 @@ export default function ContractsPage() {
           key: "action",
           header: "Acção",
           align: "right",
-          cell: (row) => (
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" size="sm">
-                {row.type === "probation" ? "Avaliar" : "Não renovar"}
-              </Button>
-              <Button size="sm">{row.type === "probation" ? "Confirmar" : "Renovar"}</Button>
-            </div>
-          ),
+          cell: (row) => <ContractActions type={row.type} employee={row.employee.name} endDate={formatDate(row.endDate)} />,
         },
       ]}
     />
@@ -60,11 +68,7 @@ export default function ContractsPage() {
         icon={Agreement01Icon}
         description="Contratos a terminar, períodos experimentais e renovações"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Novo contrato</span>
-            <span className="sr-only sm:hidden">Novo contrato</span>
-          </Button>
+          <FormDialog {...forms.contract} trigger={<HeaderButton icon={PlusSignIcon} label="Novo contrato" />} />
         }
       />
       <PageTabs
@@ -89,11 +93,28 @@ export default function ContractsPage() {
           <PageTabPanel value="probation">{alertTable(rows.filter((r) => r.type === "probation"))}</PageTabPanel>
           <PageTabPanel value="templates">
             <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {["Contrato por tempo indeterminado", "Contrato a termo certo", "Contrato de estágio profissional", "Adenda de alteração salarial", "Contrato de trabalhador estrangeiro", "Acordo de cessação"].map((name) => (
-                <li key={name} className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-card">
+              {contractTemplates.map((template) => (
+                <li key={template.name} className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-card">
                   <HugeiconsIcon icon={File02Icon} className="size-5 text-muted-foreground" aria-hidden />
-                  <span className="flex-1 text-sm font-medium">{name}</span>
-                  <Button variant="ghost" size="sm">Usar</Button>
+                  <span className="flex-1 text-sm font-medium">{template.name}</span>
+                  {template.type ? (
+                    <FormDialog
+                      {...forms.contract}
+                      title={`Novo contrato — ${template.name}`}
+                      fields={forms.contract.fields.map((field) => (field.name === "type" ? { ...field, defaultValue: template.type } : field))}
+                      trigger={
+                        <Button variant="ghost" size="sm">
+                          Usar<span className="sr-only"> {template.name}</span>
+                        </Button>
+                      }
+                    />
+                  ) : (
+                    <Button asChild variant="ghost" size="sm">
+                      <Link href={template.href!}>
+                        Usar<span className="sr-only"> {template.name}</span>
+                      </Link>
+                    </Button>
+                  )}
                 </li>
               ))}
             </ul>

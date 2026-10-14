@@ -17,10 +17,11 @@ import {
   UserCircleIcon,
 } from "@hugeicons/core-free-icons";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 
+import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { Kbd } from "@/components/common/kbd";
 import { PersonAvatar } from "@/components/common/person-avatar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -51,7 +52,10 @@ import {
 } from "@/components/ui/sidebar";
 import { footerNav, type NavItem, navGroups, primaryNav } from "@/config/navigation";
 import { cn } from "@/lib/utils";
-import { companies, company, currentUser } from "@/mocks/people";
+import { companies, currentUser } from "@/mocks/people";
+import { useLogout } from "@/queries/auth/mutation";
+import { toastService } from "@/services/toast.service";
+import { useActiveCompany } from "@/stores/company.store";
 import { useCommandMenu } from "@/stores/command-menu.store";
 
 function isActive(pathname: string, href: string) {
@@ -107,6 +111,8 @@ function CompanyLogo({ name, className }: { name: string; className?: string }) 
 }
 
 function CompanySwitcher() {
+  const { company, setCompany } = useActiveCompany();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -121,7 +127,15 @@ function CompanySwitcher() {
       <DropdownMenuContent align="start" className="w-72">
         <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Empresas do grupo</DropdownMenuLabel>
         {companies.map((item) => (
-          <DropdownMenuItem key={item.nif} className="gap-3 py-2">
+          <DropdownMenuItem
+            key={item.nif}
+            className="gap-3 py-2"
+            onSelect={() => {
+              if (item.nif === company.nif) return;
+              setCompany(item.nif);
+              toastService.success("Empresa alterada", item.name);
+            }}
+          >
             <CompanyLogo name={item.shortName} />
             <span className="min-w-0 flex-1">
               <span className="block truncate font-medium">{item.name}</span>
@@ -171,46 +185,58 @@ function ThemeMenu() {
 }
 
 function UserMenu() {
+  const router = useRouter();
+  const logout = useLogout();
+  const [confirmLogout, setConfirmLogout] = useState(false);
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <SidebarMenuButton
-          size="lg"
-          className="h-11 rounded-xl border bg-card shadow-xs data-[state=open]:bg-sidebar-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:shadow-none"
-        >
-          <PersonAvatar name={currentUser.name} size="xs" />
-          <span className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
-            <span className="block truncate font-medium text-foreground">{currentUser.name}</span>
-          </span>
-          <HugeiconsIcon icon={MoreHorizontalIcon} className="size-4 text-muted-foreground group-data-[collapsible=icon]:hidden" aria-hidden />
-          <span className="sr-only">Menu do utilizador</span>
-        </SidebarMenuButton>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent side="top" align="start" className="w-64">
-        <DropdownMenuLabel className="font-normal">
-          <span className="block font-medium">{currentUser.name}</span>
-          <span className="block text-xs text-muted-foreground">{currentUser.email}</span>
-          <span className="mt-1 block text-xs text-muted-foreground">{currentUser.role}</span>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="gap-2">
-          <Link href="/settings?tab=profile">
-            <HugeiconsIcon icon={UserCircleIcon} className="size-4" aria-hidden /> O meu perfil
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild className="gap-2">
-          <Link href="/portal">
-            <HugeiconsIcon icon={SmartPhone01Icon} className="size-4" aria-hidden /> Portal do trabalhador
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="gap-2 text-destructive focus:text-destructive">
-          <Link href="/login">
+    <>
+      <ConfirmDialog
+        open={confirmLogout}
+        onOpenChange={setConfirmLogout}
+        title="Terminar sessão?"
+        description={<p>Alterações por guardar nesta página perdem-se.</p>}
+        confirmLabel="Terminar sessão"
+        onConfirm={() => logout.mutate(undefined, { onSettled: () => router.push("/login") })}
+      />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <SidebarMenuButton
+            size="lg"
+            className="h-11 rounded-xl border bg-card shadow-xs data-[state=open]:bg-sidebar-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:shadow-none"
+          >
+            <PersonAvatar name={currentUser.name} size="xs" />
+            <span className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
+              <span className="block truncate font-medium text-foreground">{currentUser.name}</span>
+            </span>
+            <HugeiconsIcon icon={MoreHorizontalIcon} className="size-4 text-muted-foreground group-data-[collapsible=icon]:hidden" aria-hidden />
+            <span className="sr-only">Menu do utilizador</span>
+          </SidebarMenuButton>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side="top" align="start" className="w-64">
+          <DropdownMenuLabel className="font-normal">
+            <span className="block font-medium">{currentUser.name}</span>
+            <span className="block text-xs text-muted-foreground">{currentUser.email}</span>
+            <span className="mt-1 block text-xs text-muted-foreground">{currentUser.role}</span>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild className="gap-2">
+            <Link href="/settings?tab=profile">
+              <HugeiconsIcon icon={UserCircleIcon} className="size-4" aria-hidden /> O meu perfil
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className="gap-2">
+            <Link href="/portal">
+              <HugeiconsIcon icon={SmartPhone01Icon} className="size-4" aria-hidden /> Portal do trabalhador
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive" onSelect={() => setConfirmLogout(true)}>
             <HugeiconsIcon icon={Logout03Icon} className="size-4" aria-hidden /> Terminar sessão
-          </Link>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 }
 

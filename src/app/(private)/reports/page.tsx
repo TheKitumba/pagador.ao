@@ -1,12 +1,15 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Analytics01Icon, ArrowRight01Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { SectionCard, StatCard, StatGrid } from "@/components/common/cards";
 import { PageBody, PageHeader } from "@/components/common/page";
 import { Button } from "@/components/ui/button";
 import { headcountByDepartment, reportCategories } from "@/mocks/management";
+
+import { ReportSheet } from "./_components/report-sheet";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Relatórios" };
 
@@ -20,11 +23,7 @@ export default function ReportsPage() {
         icon={Analytics01Icon}
         description="Indicadores de RH e construtor de relatórios"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Novo relatório</span>
-            <span className="sr-only sm:hidden">Novo relatório</span>
-          </Button>
+          <FormDialog {...forms.report} trigger={<HeaderButton icon={PlusSignIcon} label="Novo relatório" />} />
         }
       />
       <PageBody>
@@ -63,13 +62,7 @@ export default function ReportsPage() {
                 <ul>
                   {category.reports.map((report) => (
                     <li key={report.name}>
-                      <Link href={`/reports?report=${encodeURIComponent(report.name)}`} className="group flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-accent">
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-medium">{report.name}</span>
-                          <span className="block text-xs text-muted-foreground">Actualizado: {report.updated}</span>
-                        </span>
-                        <HugeiconsIcon icon={ArrowRight01Icon} className="size-4 text-muted-foreground group-hover:text-foreground" aria-hidden />
-                      </Link>
+                      <ReportSheet name={report.name} updated={report.updated} />
                     </li>
                   ))}
                 </ul>

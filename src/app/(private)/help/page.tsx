@@ -1,11 +1,11 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { BookOpen01Icon, Call02Icon, CustomerSupportIcon, Mail01Icon, Message01Icon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { IconTile, SectionCard } from "@/components/common/cards";
 import { PageBody, PageHeader } from "@/components/common/page";
 import { helpArticles } from "@/mocks/inbox";
+
+import { ArticleSheet } from "./_components/article-sheet";
 
 export const metadata: Metadata = { title: "Central de ajuda" };
 
@@ -46,11 +46,7 @@ export default function HelpPage() {
                   .filter((article) => article.category === category)
                   .map((article) => (
                     <li key={article.title}>
-                      <Link href={`/help?article=${encodeURIComponent(article.title)}`} className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-accent">
-                        <HugeiconsIcon icon={BookOpen01Icon} className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-                        <span className="flex-1 text-sm font-medium">{article.title}</span>
-                        <span className="text-xs text-muted-foreground">{article.minutes} min</span>
-                      </Link>
+                      <ArticleSheet title={article.title} category={article.category} minutes={article.minutes} />
                     </li>
                   ))}
               </ul>

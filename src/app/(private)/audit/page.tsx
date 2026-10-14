@@ -5,7 +5,7 @@ import { DataTable } from "@/components/common/data-table";
 import { PageBody, PageHeader } from "@/components/common/page";
 import { PersonCell } from "@/components/common/person-avatar";
 import { StatusBadge } from "@/components/common/status-badge";
-import { ExportButton } from "@/components/common/toolbar";
+import { DownloadButton } from "@/components/common/action-buttons";
 import { formatDate, formatTime } from "@/lib/format";
 import { auditLog } from "@/mocks/management";
 
@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "Auditoria" };
 export default function AuditPage() {
   return (
     <>
-      <PageHeader title="Auditoria" icon={FileSearchIcon} description="Registo de todas as alterações" actions={<ExportButton />} />
+      <PageHeader title="Auditoria" icon={FileSearchIcon} description="Registo de todas as alterações" actions={<DownloadButton filename="auditoria-kianda.csv" label="Exportar CSV" rows={auditLog.map((row) => ({ data: row.at, utilizador: row.user, accao: row.action, entidade: row.entity, ip: row.ip, sensivel: row.sensitive ? "sim" : "não" }))} />} />
       <PageBody>
         <DataTable
           caption="Registo de auditoria"

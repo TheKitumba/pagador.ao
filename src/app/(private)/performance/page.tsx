@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { PlusSignIcon, Target02Icon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 
@@ -10,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { goals, nineBox, reviewCycles } from "@/mocks/growth";
+import { FormDialog } from "@/components/common/form-dialog";
+import { HeaderButton } from "@/components/common/header-button";
+import { forms } from "@/config/forms";
 
 export const metadata: Metadata = { title: "Desempenho" };
 
@@ -27,11 +29,7 @@ export default function PerformancePage() {
         icon={Target02Icon}
         description="Ciclos de avaliação, objectivos e resultados"
         actions={
-          <Button>
-            <HugeiconsIcon icon={PlusSignIcon} aria-hidden />
-            <span className="hidden sm:inline">Novo ciclo</span>
-            <span className="sr-only sm:hidden">Novo ciclo</span>
-          </Button>
+          <FormDialog {...forms.reviewCycle} trigger={<HeaderButton icon={PlusSignIcon} label="Novo ciclo" />} />
         }
       />
       <PageTabs

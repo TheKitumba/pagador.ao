@@ -9,10 +9,11 @@ import { PageBody, PageHeader, PageTabPanel, PageTabs } from "@/components/commo
 import { PersonCell } from "@/components/common/person-avatar";
 import { StatusBadge, type Tone } from "@/components/common/status-badge";
 import { requestStatusTone } from "@/components/common/status-maps";
-import { Button } from "@/components/ui/button";
 import { formatDate, formatPercent } from "@/lib/format";
 import { establishments } from "@/mocks/people";
 import { attendanceCorrections, attendanceToday, punches, requestStatusLabel } from "@/mocks/time";
+import { ConfirmDialog } from "@/components/common/confirm-dialog";
+import { HeaderButton } from "@/components/common/header-button";
 
 export const metadata: Metadata = { title: "Presença" };
 
@@ -33,11 +34,19 @@ export default function AttendancePage() {
         icon={Clock01Icon}
         description="Marcações do dia, correcções e fecho do período"
         actions={
-          <Button variant="outline">
-            <HugeiconsIcon icon={LockIcon} aria-hidden />
-            <span className="hidden sm:inline">Fechar período</span>
-            <span className="sr-only sm:hidden">Fechar período</span>
-          </Button>
+          <ConfirmDialog
+            title="Fechar o período de outubro?"
+            description={
+              <>
+                <p>As marcações deixam de poder ser alteradas e as faltas e horas extra seguem para a folha de outubro.</p>
+                <p>A Delegação do Huambo ainda tem 3 dias por consolidar.</p>
+              </>
+            }
+            confirmLabel="Fechar período"
+            successTitle="Período fechado"
+            successDescription="Faltas e horas extra enviadas para a folha de outubro."
+            trigger={<HeaderButton variant="outline" icon={LockIcon} label="Fechar período" />}
+          />
         }
       />
       <PageTabs
