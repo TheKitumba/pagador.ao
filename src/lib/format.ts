@@ -14,7 +14,8 @@ const integerFormatter = new Intl.NumberFormat(LOCALE);
 
 /** `1 250 000,00 Kz` — the documented display format for Kwanza. */
 export function formatKz(amount: number) {
-  return `${kzFormatter.format(amount)} Kz`;
+  // Non-breaking space: the currency never wraps away from the amount.
+  return `${kzFormatter.format(amount)} Kz`;
 }
 
 /** `1,3 M Kz` — for charts and tight spaces only. */

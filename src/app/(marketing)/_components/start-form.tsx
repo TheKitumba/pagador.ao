@@ -11,7 +11,7 @@ import { ROUTES } from "@/config/app";
 import { cn } from "@/lib/utils";
 
 /** Starts sign-up from the landing page: the e-mail is carried to the registration form. */
-export function StartForm({ className }: { className?: string }) {
+export function StartForm({ className, tone = "default" }: { className?: string; tone?: "default" | "inverted" }) {
   const router = useRouter();
   const inputId = useId();
   const [email, setEmail] = useState("");
@@ -34,9 +34,12 @@ export function StartForm({ className }: { className?: string }) {
         placeholder="nome@empresa.co.ao"
         value={email}
         onChange={(event) => setEmail(event.target.value)}
-        className="h-11 flex-1 bg-card"
+        className={cn(
+          "h-11 flex-1",
+          tone === "inverted" ? "border-neutral-700 bg-neutral-900 text-neutral-100 placeholder:text-neutral-500 dark:bg-background" : "bg-card",
+        )}
       />
-      <Button type="submit" size="lg" className="h-11 px-5">
+      <Button type="submit" size="lg" className={cn("h-11 px-5", tone === "inverted" && "bg-white text-neutral-950 hover:bg-neutral-200")}>
         Criar conta grátis
         <HugeiconsIcon icon={ArrowRight01Icon} aria-hidden />
       </Button>

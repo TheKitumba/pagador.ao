@@ -6,7 +6,7 @@ import { ROUTES } from "@/config/app";
 import { Brand } from "./brand";
 
 export const sectionLinks = [
-  { href: "#funcionalidades", label: "Funcionalidades" },
+  { href: "#o-problema", label: "Porquê" },
   { href: "#como-funciona", label: "Como funciona" },
   { href: "#seguranca", label: "Segurança" },
   { href: "#planos", label: "Planos" },

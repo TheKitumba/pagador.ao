@@ -2,29 +2,36 @@ import type { Metadata } from "next";
 
 import { APP_NAME } from "@/config/app";
 
-import { Audiences } from "./_components/audiences";
 import { Faq } from "./_components/faq";
-import { Features } from "./_components/features";
 import { FinalCta } from "./_components/final-cta";
 import { Hero } from "./_components/hero";
-import { PayrollCycle } from "./_components/payroll-cycle";
+import { HiddenError } from "./_components/hidden-error";
 import { Plans } from "./_components/plans";
-import { Security } from "./_components/security";
+import { Problem } from "./_components/problem";
+import { Trust } from "./_components/trust";
+import { WholeCompany } from "./_components/whole-company";
+import { YourMonth } from "./_components/your-month";
 
 export const metadata: Metadata = {
-  title: { absolute: `${APP_NAME} — Recursos humanos e folha de pagamento para empresas angolanas` },
+  title: { absolute: `${APP_NAME} — Folha de pagamento e recursos humanos para empresas angolanas` },
   description:
-    "Processe salários com o IRT e a Segurança Social correctos, pague por ficheiro bancário e entregue os mapas à AGT e ao INSS no prazo. 30 dias grátis.",
+    "Vencimentos, IRT e Segurança Social calculados segundo a lei angolana, ficheiros para o seu banco e avisos antes de cada prazo da AGT e do INSS. 30 dias grátis.",
 };
 
+/**
+ * The page tells one story: the promise (hero), the pain (problem), the hidden cost (one real IRT
+ * mistake, scaled to the reader), the new month, the rest of HR, trust, the offer, objections, and a
+ * closing invitation to compare their own payroll.
+ */
 export default function LandingPage() {
   return (
     <>
       <Hero />
-      <Features />
-      <PayrollCycle />
-      <Audiences />
-      <Security />
+      <Problem />
+      <HiddenError />
+      <YourMonth />
+      <WholeCompany />
+      <Trust />
       <Plans />
       <Faq />
       <FinalCta />
