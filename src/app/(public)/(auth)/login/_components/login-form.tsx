@@ -38,8 +38,8 @@ export function LoginForm() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight">Entrar</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Bem-vindo de volta. Introduza os seus dados para continuar.</p>
+      <h1 className="text-center text-2xl font-semibold tracking-tight text-white">Entrar no Pagador.ao</h1>
+      <p className="mt-1.5 text-center text-sm text-muted-foreground">Bem-vindo de volta. Introduza os seus dados para continuar.</p>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="mt-8 space-y-5">
@@ -74,7 +74,7 @@ export function LoginForm() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="h-10 w-full" disabled={login.isPending}>
+          <Button type="submit" className="btn-glossy h-10 w-full" disabled={login.isPending}>
             {login.isPending ? "A entrar…" : "Entrar"}
           </Button>
         </form>

@@ -116,6 +116,39 @@
 }
 
 @layer base {
+  /*
+   * Night: the public site's palette (landing page and auth, after raycast.com). Near-black
+   * surfaces, hairline borders and a monochrome primary, so shared components fit without overrides.
+   * Use together with `.dark` (for `dark:` variants); declared after it, so these values win.
+   */
+  .theme-night {
+    --background: 225 14% 3%;
+    --foreground: 0 0% 96%;
+    --card: 225 12% 5.5%;
+    --card-foreground: 0 0% 96%;
+    --popover: 225 10% 8%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 0 0% 93%;
+    --primary-foreground: 225 14% 6%;
+
+    --secondary: 225 8% 11%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 225 8% 11%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 225 8% 12%;
+    --accent-foreground: 0 0% 96%;
+    /* Solid equivalents of white at 8%, 13% and 60% on the card, so `/opacity` modifiers still work. */
+    --border: 225 6% 13%;
+    --input: 225 6% 18%;
+    --ring: 0 0% 62%;
+
+    --destructive: 0 84% 66%;
+    --destructive-foreground: 225 14% 6%;
+  }
+}
+
+@layer base {
   * {
     @apply border-border;
   }
@@ -137,6 +170,22 @@
   /* Tabular figures for money, dates and counters. */
   .tabular {
     font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* The public site's primary action: a light, glossy button for dark surfaces. */
+  .btn-glossy {
+    background-image: linear-gradient(to bottom, #ffffff, #d4d4d4);
+    color: #171717;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.9),
+      0 0 0 1px rgb(0 0 0 / 0.5),
+      0 8px 24px -8px rgb(255 255 255 / 0.25);
+  }
+
+  .btn-glossy:hover {
+    background-image: linear-gradient(to bottom, #ffffff, #e5e5e5);
   }
 }
 

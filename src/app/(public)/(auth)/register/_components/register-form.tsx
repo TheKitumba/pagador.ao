@@ -32,8 +32,8 @@ export function RegisterForm({ defaultEmail = "" }: { defaultEmail?: string }) {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight">Criar conta</h1>
-      <p className="mt-1 text-sm text-muted-foreground">30 dias grátis. Sem cartão. Configure a sua empresa em minutos.</p>
+      <h1 className="text-center text-2xl font-semibold tracking-tight text-white">Criar a conta da empresa</h1>
+      <p className="mt-1.5 text-center text-sm text-muted-foreground">30 dias grátis, sem cartão. A seguir, configuramos a empresa consigo.</p>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="mt-8 space-y-6">
@@ -180,7 +180,7 @@ export function RegisterForm({ defaultEmail = "" }: { defaultEmail?: string }) {
             )}
           />
 
-          <Button type="submit" className="h-10 w-full" disabled={register.isPending}>
+          <Button type="submit" className="btn-glossy h-10 w-full" disabled={register.isPending}>
             {register.isPending ? "A criar conta…" : "Criar conta"}
           </Button>
         </form>

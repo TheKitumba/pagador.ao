@@ -1,54 +1,49 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import { CheckmarkCircle02Icon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import type React from "react";
 
-import { APP_NAME } from "@/config/app";
+import { APP_NAME, ROUTES } from "@/config/app";
 
-const highlights = [
-  "Folha em conformidade com o IRT e a Segurança Social",
-  "Ficheiros para BAI, BFA, BIC e outros bancos",
-  "Mapas para a AGT e o INSS no prazo",
-  "Portal do trabalhador no telemóvel",
-];
+import { NightBody } from "./night-body";
 
+/**
+ * Sign-in, sign-up and recovery, in the public site's night theme (after raycast.com): one card
+ * on a near-black page, lit by the brand glow.
+ */
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid min-h-dvh lg:grid-cols-[1fr_minmax(0,560px)] xl:grid-cols-[1fr_640px]">
-      <div className="flex flex-col bg-card">
-        <header className="flex items-center gap-2 px-6 py-5 sm:px-10">
-          <Link href="/" className="flex items-center gap-2 rounded-md font-semibold">
-            <span aria-hidden className="inline-flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-sky-400 via-violet-500 to-fuchsia-500 text-sm font-bold text-white">
-              P
-            </span>
-            {APP_NAME}
-          </Link>
-        </header>
-        <main className="flex flex-1 items-center justify-center px-6 pb-12 sm:px-10">
-          <div className="w-full max-w-sm">{children}</div>
-        </main>
-        <footer className="px-6 py-5 text-xs text-muted-foreground sm:px-10">
-          © 2026 {APP_NAME} · Dados alojados em conformidade com a Lei n.º 22/11
-        </footer>
-      </div>
+    <div className="dark theme-night relative flex min-h-dvh flex-col overflow-hidden bg-background text-foreground [color-scheme:dark]">
+      <NightBody />
+      <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[26rem] w-[44rem] -translate-x-1/2 -translate-y-1/3 rounded-full bg-gradient-to-r from-sky-500/20 via-violet-500/25 to-fuchsia-500/20 blur-[110px]" />
 
-      <aside aria-label="Sobre o pagador.ao" className="relative hidden overflow-hidden bg-muted lg:flex lg:flex-col lg:justify-end">
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-sky-400/30 via-violet-500/25 to-fuchsia-500/30" />
-        <div aria-hidden className="absolute -right-24 -top-24 size-96 rounded-full bg-primary/20 blur-3xl" />
-        <div className="relative m-10 rounded-2xl border bg-card/90 p-8 shadow-overlay backdrop-blur">
-          <p className="text-xl font-semibold leading-snug tracking-tight">
-            Recursos humanos e folha de pagamento feitos para empresas angolanas.
-          </p>
-          <ul className="mt-6 space-y-3">
-            {highlights.map((item) => (
-              <li key={item} className="flex items-start gap-2.5 text-sm">
-                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="mt-0.5 size-4 shrink-0 text-success" aria-hidden />
-                {item}
-              </li>
-            ))}
-          </ul>
+      <header className="relative flex items-center justify-between px-5 py-5 sm:px-8">
+        <Link href={ROUTES.home} className="flex items-center gap-2 rounded-md text-sm font-semibold text-white">
+          <span aria-hidden className="inline-flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-sky-400 via-violet-500 to-fuchsia-500 text-xs font-bold text-white">
+            P
+          </span>
+          {APP_NAME}
+        </Link>
+        <Link href={ROUTES.home} className="text-sm text-muted-foreground transition-colors hover:text-white">
+          Voltar ao site
+        </Link>
+      </header>
+
+      <main className="relative flex flex-1 flex-col items-center px-4 pb-16 pt-6 sm:pt-10">
+        <div aria-hidden className="relative">
+          <div className="absolute inset-0 translate-y-3 rounded-[1.1rem] bg-gradient-to-br from-sky-400 via-violet-500 to-fuchsia-500 opacity-50 blur-xl" />
+          <span className="relative inline-flex size-14 items-center justify-center rounded-[1.1rem] bg-gradient-to-br from-sky-400 via-violet-500 to-fuchsia-500 text-2xl font-bold text-white shadow-[inset_0_1.5px_0_rgba(255,255,255,0.45),inset_0_-4px_8px_rgba(0,0,0,0.25)]">
+            P
+          </span>
         </div>
-      </aside>
+
+        <div className="relative mt-8 w-full max-w-md overflow-hidden rounded-2xl border border-white/[0.08] bg-card shadow-[0_30px_80px_-24px_rgba(0,0,0,0.9)]">
+          <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <div className="p-6 sm:p-8">{children}</div>
+        </div>
+      </main>
+
+      <footer className="relative px-5 pb-6 text-center font-mono text-xs text-muted-foreground sm:px-8">
+        © 2026 {APP_NAME} · Dados tratados segundo a Lei n.º 22/11
+      </footer>
     </div>
   );
 }

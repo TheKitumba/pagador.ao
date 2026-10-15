@@ -28,7 +28,7 @@ export function ForgotPasswordForm() {
   if (sentTo) {
     return (
       <div role="status">
-        <span className="inline-flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <span className="inline-flex size-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-white">
           <HugeiconsIcon icon={Mail01Icon} className="size-5" aria-hidden />
         </span>
         <h1 className="mt-5 text-2xl font-semibold tracking-tight">Verifique a sua caixa</h1>
@@ -69,7 +69,7 @@ export function ForgotPasswordForm() {
             </p>
           )}
         </div>
-        <Button type="submit" className="h-10 w-full">
+        <Button type="submit" className="btn-glossy h-10 w-full">
           Enviar instruções
         </Button>
       </form>
