@@ -2,28 +2,26 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { type FormEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/config/app";
-import { useLoginMutation } from "@/queries/auth/mutation";
+import { useAfterSignIn } from "@/hooks/use-after-sign-in";
+import { useLoginMutation, useVerifyTwoFactorMutation } from "@/queries/auth/mutation";
 import { type LoginFormValues, loginSchema } from "@/schemas/auth";
 import { toastService } from "@/services/toast.service";
 
-import { SmsSignInDialog, SsoSignInDialog } from "./alternative-sign-in";
-
-// Only same-site paths, so `?next=` cannot be used as an open redirect.
-function safeRedirectPath(next: string | null) {
-  return next?.startsWith("/") && !next.startsWith("//") ? next : ROUTES.dashboard;
-}
+import { SmsSignInDialog } from "./alternative-sign-in";
 
 export function LoginForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const login = useLoginMutation();
+  const afterSignIn = useAfterSignIn();
+  const [challengeToken, setChallengeToken] = useState<string | null>(null);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -32,9 +30,16 @@ export function LoginForm() {
 
   const onSubmit = (values: LoginFormValues) =>
     login.mutate(values, {
-      onSuccess: () => router.replace(safeRedirectPath(searchParams.get("next"))),
+      onSuccess: (result) => {
+        if (result.requiresTwoFactor && result.challengeToken) setChallengeToken(result.challengeToken);
+        else if (result.user) afterSignIn(result.user);
+      },
       onError: toastService.apiError,
     });
+
+  if (challengeToken) {
+    return <TwoFactorStep challengeToken={challengeToken} onBack={() => setChallengeToken(null)} />;
+  }
 
   return (
     <div>
@@ -63,7 +68,7 @@ export function LoginForm() {
               <FormItem>
                 <div className="flex items-center justify-between">
                   <FormLabel>Palavra-passe</FormLabel>
-                  <Link href="/forgot-password" className="text-sm font-medium text-primary hover:underline underline-offset-4">
+                  <Link href={ROUTES.forgotPassword} className="text-sm font-medium text-primary underline-offset-4 hover:underline">
                     Esqueceu-se?
                   </Link>
                 </div>
@@ -85,17 +90,83 @@ export function LoginForm() {
         ou
         <span className="h-px flex-1 bg-border" />
       </div>
-      <div className="grid gap-2">
-        <SmsSignInDialog />
-        <SsoSignInDialog />
-      </div>
+      <SmsSignInDialog />
 
       <p className="mt-8 text-center text-sm text-muted-foreground">
         Ainda não tem conta?{" "}
-        <Link href={ROUTES.register} className="font-medium text-primary hover:underline underline-offset-4">
+        <Link href={ROUTES.register} className="font-medium text-primary underline-offset-4 hover:underline">
           Criar conta
         </Link>
       </p>
+    </div>
+  );
+}
+
+/** Second step when the account has 2FA: a code from the authenticator app (POST /auth/2fa/verify). */
+function TwoFactorStep({ challengeToken, onBack }: { challengeToken: string; onBack: () => void }) {
+  const verify = useVerifyTwoFactorMutation();
+  const afterSignIn = useAfterSignIn();
+  const [code, setCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const submit = (event?: FormEvent) => {
+    event?.preventDefault();
+    if (code.length !== 6) {
+      setError("Introduza os 6 dígitos da aplicação autenticadora.");
+      return;
+    }
+    setError(null);
+    verify.mutate(
+      { challengeToken, code },
+      {
+        onSuccess: ({ user }) => user && afterSignIn(user),
+        onError: (apiError) => {
+          setCode("");
+          toastService.apiError(apiError);
+        },
+      },
+    );
+  };
+
+  return (
+    <div>
+      <h1 className="text-center text-2xl font-semibold tracking-tight text-white">Verificação em dois passos</h1>
+      <p className="mt-1.5 text-center text-sm text-muted-foreground">Introduza o código de 6 dígitos da sua aplicação autenticadora.</p>
+
+      <form onSubmit={submit} noValidate className="mt-8 flex flex-col items-center gap-5">
+        <Label htmlFor="two-factor-code" className="sr-only">
+          Código de 6 dígitos
+        </Label>
+        <InputOTP
+          id="two-factor-code"
+          maxLength={6}
+          value={code}
+          onChange={setCode}
+          onComplete={() => submit()}
+          autoFocus
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? "two-factor-error" : undefined}
+        >
+          <InputOTPGroup>
+            {Array.from({ length: 6 }).map((_, index) => (
+              <InputOTPSlot key={index} index={index} className="size-11 text-base" />
+            ))}
+          </InputOTPGroup>
+        </InputOTP>
+        {error && (
+          <p id="two-factor-error" role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
+        )}
+        <Button type="submit" className="btn-glossy h-10 w-full" disabled={verify.isPending}>
+          {verify.isPending ? "A verificar…" : "Verificar"}
+        </Button>
+        <Button type="button" variant="ghost" className="h-auto p-0 text-sm" onClick={onBack}>
+          Usar outra conta
+        </Button>
+      </form>
     </div>
   );
 }

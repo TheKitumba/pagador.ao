@@ -50,13 +50,18 @@ import {
   SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { footerNav, type NavItem, navGroups, primaryNav } from "@/config/navigation";
+import { ROLE_LABEL } from "@api/types/auth";
+import { ROUTES } from "@/config/app";
+import { type NavItem } from "@/config/navigation";
 import { cn } from "@/lib/utils";
-import { companies, currentUser } from "@/mocks/people";
+import { companies } from "@/mocks/people";
+import { useSession } from "@/providers/session-provider";
 import { useLogoutMutation } from "@/queries/auth/mutation";
 import { toastService } from "@/services/toast.service";
 import { useActiveCompany } from "@/stores/company.store";
 import { useCommandMenu } from "@/stores/command-menu.store";
+
+import { useVisibleNav } from "./use-visible-nav";
 
 function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
@@ -186,6 +191,7 @@ function ThemeMenu() {
 
 function UserMenu() {
   const router = useRouter();
+  const user = useSession();
   const logout = useLogoutMutation();
   const [confirmLogout, setConfirmLogout] = useState(false);
 
@@ -197,7 +203,7 @@ function UserMenu() {
         title="Terminar sessão?"
         description={<p>Alterações por guardar nesta página perdem-se.</p>}
         confirmLabel="Terminar sessão"
-        onConfirm={() => logout.mutate(undefined, { onSettled: () => router.push("/login") })}
+        onConfirm={() => logout.mutate(undefined, { onSettled: () => router.replace(ROUTES.login) })}
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -205,9 +211,9 @@ function UserMenu() {
             size="lg"
             className="h-11 rounded-xl border bg-card shadow-xs data-[state=open]:bg-sidebar-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:shadow-none"
           >
-            <PersonAvatar name={currentUser.name} size="xs" />
+            <PersonAvatar name={user.name} size="xs" />
             <span className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
-              <span className="block truncate font-medium text-foreground">{currentUser.name}</span>
+              <span className="block truncate font-medium text-foreground">{user.name}</span>
             </span>
             <HugeiconsIcon icon={MoreHorizontalIcon} className="size-4 text-muted-foreground group-data-[collapsible=icon]:hidden" aria-hidden />
             <span className="sr-only">Menu do utilizador</span>
@@ -215,21 +221,23 @@ function UserMenu() {
         </DropdownMenuTrigger>
         <DropdownMenuContent side="top" align="start" className="w-64">
           <DropdownMenuLabel className="font-normal">
-            <span className="block font-medium">{currentUser.name}</span>
-            <span className="block text-xs text-muted-foreground">{currentUser.email}</span>
-            <span className="mt-1 block text-xs text-muted-foreground">{currentUser.role}</span>
+            <span className="block font-medium">{user.name}</span>
+            {user.email && <span className="block text-xs text-muted-foreground">{user.email}</span>}
+            <span className="mt-1 block text-xs text-muted-foreground">{user.roles.map((role) => ROLE_LABEL[role]).join(" · ")}</span>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild className="gap-2">
-            <Link href="/settings?tab=profile">
+            <Link href={ROUTES.account}>
               <HugeiconsIcon icon={UserCircleIcon} className="size-4" aria-hidden /> O meu perfil
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className="gap-2">
-            <Link href="/portal">
-              <HugeiconsIcon icon={SmartPhone01Icon} className="size-4" aria-hidden /> Portal do trabalhador
-            </Link>
-          </DropdownMenuItem>
+          {user.employeeId && (
+            <DropdownMenuItem asChild className="gap-2">
+              <Link href={ROUTES.portal}>
+                <HugeiconsIcon icon={SmartPhone01Icon} className="size-4" aria-hidden /> Portal do trabalhador
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive" onSelect={() => setConfirmLogout(true)}>
             <HugeiconsIcon icon={Logout03Icon} className="size-4" aria-hidden /> Terminar sessão
@@ -245,6 +253,7 @@ export function AppSidebar() {
   const commandMenu = useCommandMenu();
   const { toggleSidebar, state } = useSidebar();
   const contentRef = useRef<HTMLDivElement>(null);
+  const nav = useVisibleNav();
 
   // Keep the current page visible in a long (or collapsed) navigation list.
   useEffect(() => {
@@ -293,7 +302,7 @@ export function AppSidebar() {
         <SidebarGroup className="py-1">
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
-              {primaryNav.map((item) => (
+              {nav.primary.map((item) => (
                 <NavLink key={item.href} item={item} pathname={pathname} notify />
               ))}
             </SidebarMenu>
@@ -302,7 +311,7 @@ export function AppSidebar() {
 
         <SidebarSeparator className="mx-3 my-2 group-data-[collapsible=icon]:hidden" />
 
-        {navGroups.map((group) => (
+        {nav.groups.map((group) => (
           <Collapsible key={group.id} defaultOpen className="group/collapsible">
             <SidebarGroup className="py-1">
               <div aria-hidden className="mx-auto mb-1 hidden h-px w-6 bg-sidebar-border group-data-[collapsible=icon]:block" />
@@ -331,7 +340,7 @@ export function AppSidebar() {
       <SidebarFooter className="gap-2 border-t border-sidebar-border p-3 group-data-[collapsible=icon]:px-2">
         <SidebarMenu className="gap-0.5">
           <ThemeMenu />
-          {footerNav.map((item) => (
+          {nav.footer.map((item) => (
             <NavLink key={item.href} item={item} pathname={pathname} />
           ))}
         </SidebarMenu>

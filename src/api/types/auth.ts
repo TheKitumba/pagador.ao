@@ -11,6 +11,19 @@ export type Role =
   | "EMPLOYEE"
   | "AUDITOR";
 
+/** Same wording as the API (shared/application/permissions.ts). */
+export const ROLE_LABEL: Record<Role, string> = {
+  ACCOUNT_ADMIN: "Administrador da conta",
+  HR_MANAGER: "Gestor de RH",
+  HR_TECHNICIAN: "Técnico de RH",
+  PAYROLL_PROCESSOR: "Processador salarial",
+  FINANCIAL_APPROVER: "Aprovador financeiro",
+  LINE_MANAGER: "Chefia directa",
+  RECRUITER: "Recrutador",
+  EMPLOYEE: "Trabalhador",
+  AUDITOR: "Auditor",
+};
+
 export interface SessionUser {
   id: string;
   name: string;
@@ -22,6 +35,7 @@ export interface SessionUser {
   roles: Role[];
   /** Effective permissions, e.g. "payroll.approve" — use to show or hide actions. */
   permissions: string[];
+  twoFactorEnabled: boolean;
 }
 
 export interface LoginRequest {
@@ -57,3 +71,26 @@ export interface RegisterRequest {
 }
 
 export type RegisterResponse = LoginResponse;
+
+export interface OtpVerifyRequest {
+  /** +244 9XX XXX XXX */
+  phone: string;
+  code: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  password: string;
+}
+
+export interface AcceptInvitationRequest {
+  token: string;
+  name: string;
+  password: string;
+}
+
+export interface TwoFactorSetup {
+  secret: string;
+  /** Show as a QR code for the authenticator app. */
+  otpauthUrl: string;
+}

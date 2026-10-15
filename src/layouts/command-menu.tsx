@@ -14,11 +14,13 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
-import { footerNav, navGroups, primaryNav } from "@/config/navigation";
+import { canOpen } from "@/config/access";
 import { employees } from "@/mocks/people";
+import { useSession } from "@/providers/session-provider";
 import { useCommandMenu } from "@/stores/command-menu.store";
 
 import { createActions } from "./create-menu";
+import { useVisibleNav } from "./use-visible-nav";
 
 function isTyping(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false;
@@ -28,6 +30,9 @@ function isTyping(target: EventTarget | null) {
 /** Global search: pages, quick actions and people. Opens with ⌘K / Ctrl+K, or "/" outside text fields. */
 export function CommandMenu() {
   const router = useRouter();
+  const user = useSession();
+  const nav = useVisibleNav();
+  const actions = createActions.filter((action) => canOpen(user.permissions, action.href));
   const { isOpen, setOpen, toggle } = useCommandMenu();
 
   useEffect(() => {
@@ -57,7 +62,7 @@ export function CommandMenu() {
         <CommandEmpty>Sem resultados.</CommandEmpty>
 
         <CommandGroup heading="Acções rápidas">
-          {createActions.map((action) => (
+          {actions.map((action) => (
             <CommandItem key={action.href} value={`acção ${action.title}`} onSelect={() => go(action.href)} className="gap-3">
               <HugeiconsIcon icon={action.icon} className="size-4 text-muted-foreground" aria-hidden />
               {action.title}
@@ -67,7 +72,7 @@ export function CommandMenu() {
 
         <CommandSeparator />
 
-        {[{ id: "main", title: "Principal", items: primaryNav }, ...navGroups, { id: "system", title: "Sistema", items: footerNav }].map(
+        {[{ id: "main", title: "Principal", items: nav.primary }, ...nav.groups, { id: "system", title: "Sistema", items: nav.footer }].map(
           (group) => (
             <CommandGroup key={group.id} heading={group.title}>
               {group.items.map((item) => (

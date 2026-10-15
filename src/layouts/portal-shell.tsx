@@ -1,16 +1,18 @@
 "use client";
 
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Clock01Icon, Home01Icon, Invoice01Icon, TaskDaily01Icon, UserCircleIcon } from "@hugeicons/core-free-icons";
+import { Clock01Icon, Home01Icon, Invoice01Icon, Logout03Icon, TaskDaily01Icon, UserCircleIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type React from "react";
 
 import { PersonAvatar } from "@/components/common/person-avatar";
+import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/config/app";
 import { cn } from "@/lib/utils";
 import { company } from "@/mocks/people";
-
-export const PORTAL_EMPLOYEE = "Ana Mateus";
+import { useSession } from "@/providers/session-provider";
+import { useLogoutMutation } from "@/queries/auth/mutation";
 
 const portalNav = [
   { href: "/portal", label: "Início", icon: Home01Icon },
@@ -23,6 +25,9 @@ const portalNav = [
 /** Worker self-service: phone-first, bottom navigation on small screens, top tabs on larger ones. */
 export function PortalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const user = useSession();
+  const logout = useLogoutMutation();
   const isActive = (href: string) => (href === "/portal" ? pathname === href : pathname.startsWith(href));
 
   return (
@@ -41,9 +46,20 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
             </span>
             <span className="truncate">{company.shortName}</span>
           </span>
-          <Link href="/portal/profile" className="rounded-full" aria-label={`Perfil de ${PORTAL_EMPLOYEE}`}>
-            <PersonAvatar name={PORTAL_EMPLOYEE} />
-          </Link>
+          <div className="flex items-center gap-1">
+            <Link href="/portal/profile" className="rounded-full" aria-label={`Perfil de ${user.name}`}>
+              <PersonAvatar name={user.name} />
+            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Terminar sessão"
+              disabled={logout.isPending}
+              onClick={() => logout.mutate(undefined, { onSettled: () => router.replace(ROUTES.login) })}
+            >
+              <HugeiconsIcon icon={Logout03Icon} aria-hidden />
+            </Button>
+          </div>
         </div>
         <nav aria-label="Portal do trabalhador" className="mx-auto hidden max-w-3xl px-4 md:block">
           <ul className="flex gap-1">

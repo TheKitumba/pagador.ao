@@ -9,7 +9,7 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { company, currentUser, establishments } from "@/mocks/people";
+import { company, establishments } from "@/mocks/people";
 
 import { FormDialog } from "@/components/common/form-dialog";
 import { forms } from "@/config/forms";
@@ -67,7 +67,6 @@ export default function SettingsPage() {
       <PageTabs
         tabs={[
           { value: "company", label: "Empresa" },
-          { value: "profile", label: "O meu perfil" },
           { value: "users", label: "Utilizadores e acessos" },
           { value: "pay-items", label: "Rubricas" },
           { value: "legal", label: "Parâmetros legais" },
@@ -109,24 +108,6 @@ export default function SettingsPage() {
                   </li>
                 ))}
               </ul>
-            </SectionCard>
-          </PageTabPanel>
-
-          <PageTabPanel value="profile" className="space-y-6">
-            <SectionCard title="Dados pessoais">
-              <SaveForm successTitle="Perfil guardado" className="grid gap-4 sm:grid-cols-2">
-                <Field id="me-name" label="Nome" defaultValue={currentUser.name} />
-                <Field id="me-email" label="E-mail" type="email" defaultValue={currentUser.email} />
-                <div className="flex justify-end sm:col-span-2">
-                  <Button type="submit">Guardar</Button>
-                </div>
-              </SaveForm>
-            </SectionCard>
-            <SectionCard title="Segurança">
-              <div className="divide-y">
-                <ToggleRow id="2fa" label="Autenticação de dois factores" description="Obrigatória para quem acede a salários, pagamentos e configurações." defaultChecked />
-                <ToggleRow id="sessions" label="Terminar sessão após 30 minutos de inactividade" description="Recomendado em computadores partilhados." defaultChecked />
-              </div>
             </SectionCard>
           </PageTabPanel>
 

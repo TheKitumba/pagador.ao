@@ -2,39 +2,45 @@
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon, Mail01Icon } from "@hugeicons/core-free-icons";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { type FormEvent, useState } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/config/app";
+import { useForgotPasswordMutation } from "@/queries/auth/mutation";
+import { type ForgotPasswordFormValues, forgotPasswordSchema } from "@/schemas/auth";
+import { toastService } from "@/services/toast.service";
 
 export function ForgotPasswordForm() {
+  const forgot = useForgotPasswordMutation();
   const [sentTo, setSentTo] = useState<string | null>(null);
-  const [value, setValue] = useState("");
-  const [error, setError] = useState<string | null>(null);
 
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    if (!value.trim()) {
-      setError("Indique o seu e-mail ou telemóvel.");
-      return;
-    }
-    // The API answers the same way whether or not the account exists, to avoid revealing accounts.
-    setSentTo(value.trim());
-  };
+  const form = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: { email: "" },
+  });
+
+  const onSubmit = ({ email }: ForgotPasswordFormValues) =>
+    forgot.mutate(email.trim(), {
+      // The API answers the same whether or not the account exists, so the message does too.
+      onSuccess: () => setSentTo(email.trim()),
+      onError: toastService.apiError,
+    });
 
   if (sentTo) {
     return (
-      <div role="status">
-        <span className="inline-flex size-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-white">
+      <div role="status" className="text-center">
+        <span className="mx-auto inline-flex size-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-white">
           <HugeiconsIcon icon={Mail01Icon} className="size-5" aria-hidden />
         </span>
-        <h1 className="mt-5 text-2xl font-semibold tracking-tight">Verifique a sua caixa</h1>
+        <h1 className="mt-5 text-2xl font-semibold tracking-tight text-white">Verifique a sua caixa</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Se existir uma conta associada a <span className="font-medium text-foreground">{sentTo}</span>, enviámos uma ligação (ou um código por SMS) para
-          redefinir a palavra-passe. É válida durante 30 minutos.
+          Se existir uma conta com <span className="font-medium text-foreground">{sentTo}</span>, enviámos uma ligação para redefinir a palavra-passe. É
+          válida durante 30 minutos.
         </p>
         <Button asChild variant="outline" className="mt-8 h-10 w-full">
           <Link href={ROUTES.login}>Voltar a entrar</Link>
@@ -49,30 +55,30 @@ export function ForgotPasswordForm() {
         <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" aria-hidden />
         Voltar
       </Link>
-      <h1 className="mt-4 text-2xl font-semibold tracking-tight">Recuperar acesso</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Indique o e-mail ou o telemóvel da sua conta.</p>
-      <form onSubmit={submit} noValidate className="mt-8 space-y-5">
-        <div className="space-y-1.5">
-          <Label htmlFor="identifier">E-mail ou telemóvel</Label>
-          <Input
-            id="identifier"
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-            autoComplete="username"
-            className="h-10"
-            aria-invalid={Boolean(error)}
-            aria-describedby={error ? "identifier-error" : undefined}
+      <h1 className="mt-4 text-2xl font-semibold tracking-tight text-white">Recuperar acesso</h1>
+      <p className="mt-1.5 text-sm text-muted-foreground">
+        Indique o e-mail da sua conta. Se entra com o telemóvel, use o código por SMS na página de entrada.
+      </p>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="mt-8 space-y-5">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>E-mail</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="nome@empresa.co.ao" autoComplete="email" className="h-10" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {error && (
-            <p id="identifier-error" role="alert" className="text-sm text-destructive">
-              {error}
-            </p>
-          )}
-        </div>
-        <Button type="submit" className="btn-glossy h-10 w-full">
-          Enviar instruções
-        </Button>
-      </form>
+          <Button type="submit" className="btn-glossy h-10 w-full" disabled={forgot.isPending}>
+            {forgot.isPending ? "A enviar…" : "Enviar ligação"}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }

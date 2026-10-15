@@ -22,6 +22,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { canOpen } from "@/config/access";
+import { useSession } from "@/providers/session-provider";
 
 export const createActions = [
   { title: "Admitir trabalhador", description: "Dados, contrato e documentos", href: "/employees/new", icon: UserAdd01Icon },
@@ -34,6 +36,10 @@ export const createActions = [
 
 /** Primary "Criar" button of the app, with the most frequent creation flows. */
 export function CreateMenu() {
+  const user = useSession();
+  const actions = createActions.filter((action) => canOpen(user.permissions, action.href));
+  if (actions.length === 0) return null;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -47,7 +53,7 @@ export function CreateMenu() {
       <DropdownMenuContent align="end" className="w-72">
         <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Criar novo</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {createActions.map((action) => (
+        {actions.map((action) => (
           <DropdownMenuItem key={action.href} asChild className="gap-3 py-2">
             <Link href={action.href}>
               <span className="inline-flex size-8 items-center justify-center rounded-md border bg-muted/60 text-muted-foreground">

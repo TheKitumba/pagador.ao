@@ -1,5 +1,6 @@
 import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
+import { isPublicPath } from "@/config/access";
 import { ROUTES } from "@/config/app";
 
 import { ApiError } from "./api-error";
@@ -7,11 +8,12 @@ import { tokenManager } from "./token-manager";
 
 type RetriableConfig = InternalAxiosRequestConfig & { _retried?: boolean };
 
-const AUTH_ENDPOINTS = ["/auth/login", "/auth/refresh", "/auth/logout"];
+// Unauthenticated endpoints: a 401 there means bad credentials or code, not an expired session.
+const AUTH_ENDPOINTS = ["/auth/login", "/auth/register", "/auth/refresh", "/auth/logout", "/auth/2fa/verify", "/auth/otp/", "/auth/password/", "/auth/invitations/"];
 
 function redirectToLogin() {
   if (typeof window === "undefined") return;
-  if (window.location.pathname === ROUTES.login) return;
+  if (isPublicPath(window.location.pathname)) return;
 
   const next = encodeURIComponent(window.location.pathname + window.location.search);
   window.location.assign(`${ROUTES.login}?next=${next}`);
