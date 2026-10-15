@@ -1,6 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-import { SectionHeading } from "./section-heading";
+import { TwoTone } from "./primitives";
 
 // Ordered by the objections a buyer actually raises.
 const questions = [
@@ -32,14 +32,14 @@ const questions = [
 
 export function Faq() {
   return (
-    <section aria-labelledby="perguntas-title" id="perguntas" className="scroll-mt-16 border-t py-20 sm:py-28">
-      <div className="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-[1fr_1.6fr] lg:gap-24">
-        <SectionHeading id="perguntas-title" kicker="Perguntas" title="O que nos perguntam antes de mudar." />
-        <Accordion type="single" collapsible className="border-t">
+    <section aria-labelledby="perguntas-title" id="perguntas" className="scroll-mt-24 border-t border-white/[0.06] px-4 py-24 sm:px-6 sm:py-32">
+      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_1.6fr] lg:gap-24">
+        <TwoTone id="perguntas-title" lead="Perguntas." rest="O que nos perguntam antes de mudar." align="left" size="md" />
+        <Accordion type="single" collapsible className="border-t border-white/[0.08]">
           {questions.map((item) => (
-            <AccordionItem key={item.q} value={item.q}>
-              <AccordionTrigger className="py-5 text-left text-base hover:no-underline">{item.q}</AccordionTrigger>
-              <AccordionContent className="pb-6 pr-8 text-base leading-relaxed text-muted-foreground">{item.a}</AccordionContent>
+            <AccordionItem key={item.q} value={item.q} className="border-white/[0.08]">
+              <AccordionTrigger className="py-5 text-left text-base font-normal text-neutral-100 hover:no-underline">{item.q}</AccordionTrigger>
+              <AccordionContent className="pb-6 pr-8 text-[15px] leading-relaxed text-neutral-400">{item.a}</AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>

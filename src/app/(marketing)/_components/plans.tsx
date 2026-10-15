@@ -1,21 +1,22 @@
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/config/app";
+import { cn } from "@/lib/utils";
 
-import { SectionHeading } from "./section-heading";
+import { GlowCard, Mono, TwoTone, ghostButton, glossyButton } from "./primitives";
 
 // docs/01 (1.7). Prices are per active worker per month and not published yet.
 const plans = [
   {
     name: "Essencial",
-    forWho: "Até algumas dezenas de trabalhadores, salários pagos a tempo e sem erros.",
+    forWho: "Salários certos e a tempo, sem complicações.",
     features: ["Trabalhadores e contratos", "Folha de pagamento, IRT e INSS", "Recibos digitais", "Mapas para a AGT e o INSS", "Férias, faltas e licenças", "Portal do trabalhador básico"],
   },
   {
     name: "Profissional",
-    forWho: "Várias equipas, turnos e pagamentos por ficheiro bancário.",
+    forWho: "Várias equipas, turnos e pagamentos por banco.",
     intro: "Tudo do Essencial, e",
+    lit: true,
     features: ["Ponto electrónico e escalas", "Ficheiros bancários em lote", "Recrutamento", "Desempenho e formação", "Fluxos de aprovação", "Portal do trabalhador completo"],
   },
   {
@@ -28,32 +29,38 @@ const plans = [
 
 export function Plans() {
   return (
-    <section aria-labelledby="planos-title" id="planos" className="scroll-mt-16 py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
-          <SectionHeading id="planos-title" kicker="Planos" title="Pague pelos trabalhadores activos. Nada mais.">
-            <p>Um preço mensal por trabalhador, em Kwanzas, com desconto no pagamento anual. Experimente 30 dias, sem cartão.</p>
-          </SectionHeading>
-          <Button asChild size="lg" className="h-11 self-start lg:self-auto">
-            <Link href={ROUTES.register}>Criar conta grátis</Link>
-          </Button>
-        </div>
+    <section aria-labelledby="planos-title" id="planos" className="scroll-mt-24 px-4 py-24 sm:px-6 sm:py-32">
+      <div className="mx-auto max-w-6xl">
+        <TwoTone id="planos-title" lead="Pague pelos trabalhadores activos." rest="Nada mais." />
+        <p className="mt-6 text-center">
+          <Mono>Preço mensal por trabalhador, em Kwanzas · desconto no pagamento anual · 30 dias grátis</Mono>
+        </p>
 
-        <div className="mt-14 grid border-t lg:grid-cols-3">
-          {plans.map((plan, index) => (
-            <article key={plan.name} className={index > 0 ? "border-b py-8 lg:border-b-0 lg:border-l lg:pl-8 lg:pr-4" : "border-b py-8 lg:border-b-0 lg:pr-8"}>
-              <h3 className="text-xl font-semibold tracking-tight">{plan.name}</h3>
-              <p className="mt-2 min-h-12 text-muted-foreground">{plan.forWho}</p>
-              {plan.intro && <p className="mt-6 text-sm font-medium">{plan.intro}</p>}
-              <ul className={plan.intro ? "mt-3 space-y-2.5" : "mt-6 space-y-2.5"}>
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex gap-3 text-sm">
-                    <span aria-hidden className="mt-2 h-px w-3 shrink-0 bg-foreground/40" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </article>
+        <div className="mt-16 grid gap-3 lg:grid-cols-3">
+          {plans.map((plan) => (
+            <GlowCard key={plan.name} glow={plan.lit ? "violet" : "none"} className={cn(plan.lit && "border-white/[0.14]")}>
+              <article className="flex h-full flex-col p-6 sm:p-8">
+                <h3 className="text-lg font-medium text-white">{plan.name}</h3>
+                <p className="mt-2 text-sm text-neutral-400">{plan.forWho}</p>
+                <p className="mt-6">
+                  <Mono className="text-neutral-400">por trabalhador activo / mês</Mono>
+                </p>
+                <Link href={ROUTES.register} className={cn("mt-6 w-full", plan.lit ? glossyButton : ghostButton)}>
+                  Começar 30 dias grátis
+                </Link>
+                <div className="mt-8 border-t border-white/[0.07] pt-6">
+                  {plan.intro && <p className="mb-3 text-sm text-neutral-300">{plan.intro}</p>}
+                  <ul className="space-y-2.5">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex gap-3 text-sm text-neutral-400">
+                        <span aria-hidden className="mt-2 h-px w-3 shrink-0 bg-white/30" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
+            </GlowCard>
           ))}
         </div>
       </div>

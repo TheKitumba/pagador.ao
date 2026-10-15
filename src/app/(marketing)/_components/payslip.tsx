@@ -2,6 +2,7 @@ import { formatKz } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 import { example } from "./example";
+import { GlowCard, Mono } from "./primitives";
 
 function Line({ label, amount, className }: { label: React.ReactNode; amount: number; className?: string }) {
   return (
@@ -12,46 +13,41 @@ function Line({ label, amount, className }: { label: React.ReactNode; amount: nu
   );
 }
 
-/** The payslip of the worked example, styled as the document the employee receives. */
+/** The payslip of the worked example (docs/04, 4.6), as the employee receives it. */
 export function Payslip() {
   return (
-    <figure className="relative mx-auto w-full max-w-md lg:mx-0 lg:ml-auto">
-      {/* Paper stack: two sheets behind the payslip. */}
-      <div aria-hidden className="absolute inset-x-4 -bottom-3 top-3 rounded-2xl border bg-card/70" />
-      <div aria-hidden className="absolute inset-x-8 -bottom-6 top-6 rounded-2xl border bg-card/40" />
-
-      <div className="relative rounded-2xl border bg-card p-6 text-sm shadow-overlay sm:p-7">
-        <header className="flex items-start justify-between gap-4 border-b pb-4">
+    <GlowCard glow="blue" className="h-full">
+      <figure className="p-6 text-sm sm:p-7">
+        <header className="flex items-start justify-between gap-4">
           <div>
-            <p className="font-semibold">Recibo de vencimento</p>
-            <p className="text-muted-foreground">{example.period}</p>
+            <p className="font-medium text-white">Recibo de vencimento</p>
+            <Mono>{example.period}</Mono>
           </div>
-          <p className="text-right text-muted-foreground">{example.company}</p>
+          <Mono>{example.company}</Mono>
         </header>
 
-        <p className="mt-4">
-          <span className="font-medium">{example.employee}</span>
-          <span className="text-muted-foreground"> · {example.role}</span>
+        <p className="mt-5 text-neutral-300">
+          {example.employee} <span className="text-neutral-500">· {example.role}</span>
         </p>
 
-        <dl className="mt-3 text-muted-foreground">
+        <dl className="mt-3 text-neutral-400">
           {example.earnings.map((line) => (
             <Line key={line.label} label={line.label} amount={line.amount} />
           ))}
-          <Line label="Total ilíquido" amount={example.gross} className="mt-1 border-t pt-2.5 font-medium text-foreground" />
+          <Line label="Total ilíquido" amount={example.gross} className="mt-1 border-t border-white/[0.07] pt-2.5 text-neutral-200" />
           <Line label="Segurança Social · 3%" amount={-example.socialSecurity} />
-          <div className="-mx-3 rounded-lg bg-primary/[0.07] px-3 ring-1 ring-primary/20">
-            <Line label="IRT · escalão 5" amount={-example.irt} className="font-medium text-foreground" />
-            <p className="pb-2 text-xs leading-snug text-primary">Inclui os 10 000 Kz do subsídio de alimentação acima do limite de isenção.</p>
+          <div className="-mx-3 mt-1 rounded-lg bg-sky-400/[0.08] px-3 ring-1 ring-sky-400/25">
+            <Line label="IRT · escalão 5" amount={-example.irt} className="text-white" />
+            <p className="pb-2 text-xs leading-snug text-sky-300">Inclui os 10 000 Kz do subsídio de alimentação acima do limite de isenção.</p>
           </div>
         </dl>
 
-        <div className="mt-4 flex items-baseline justify-between gap-4 border-t pt-4">
-          <span className="font-medium">Líquido a receber</span>
-          <span className="tabular text-xl font-semibold tracking-tight">{formatKz(example.net)}</span>
+        <div className="mt-4 flex items-baseline justify-between gap-4 border-t border-white/[0.07] pt-4">
+          <span className="text-neutral-300">Líquido a receber</span>
+          <span className="tabular text-xl font-semibold tracking-tight text-white">{formatKz(example.net)}</span>
         </div>
-      </div>
-      <figcaption className="sr-only">Exemplo de recibo de vencimento calculado pelo Pagador.ao.</figcaption>
-    </figure>
+        <figcaption className="sr-only">Recibo de vencimento de exemplo calculado pelo Pagador.ao.</figcaption>
+      </figure>
+    </GlowCard>
   );
 }

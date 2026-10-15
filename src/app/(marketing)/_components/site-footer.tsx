@@ -3,60 +3,60 @@ import Link from "next/link";
 import { APP_NAME, ROUTES } from "@/config/app";
 
 import { Brand } from "./brand";
+import { Mono } from "./primitives";
 import { sectionLinks } from "./site-header";
+
+const columns = [
+  { title: "Produto", links: sectionLinks.map((link) => ({ ...link, external: false })) },
+  {
+    title: "Conta",
+    links: [
+      { href: ROUTES.register, label: "Criar conta", external: false },
+      { href: ROUTES.login, label: "Entrar", external: false },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { href: "https://pagador.ao/termos", label: "Termos de utilização", external: true },
+      { href: "https://pagador.ao/privacidade", label: "Política de privacidade", external: true },
+    ],
+  },
+];
 
 export function SiteFooter() {
   return (
-    <footer className="border-t bg-card">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr]">
-        <div className="max-w-sm">
-          <Brand />
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Recursos humanos e folha de pagamento feitos para empresas angolanas, da micro empresa ao grupo empresarial.
-          </p>
+    <footer className="border-t border-white/[0.06]">
+      <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
+        <div>
+          <Brand className="text-white" />
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-neutral-500">Recursos humanos e folha de pagamento para empresas angolanas.</p>
         </div>
-        <nav aria-label="Produto">
-          <h2 className="text-sm font-semibold">Produto</h2>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-            {sectionLinks.map((link) => (
-              <li key={link.href}>
-                <a href={link.href} className="hover:text-foreground">
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <nav aria-label="Conta">
-          <h2 className="text-sm font-semibold">Conta</h2>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-            <li>
-              <Link href={ROUTES.register} className="hover:text-foreground">
-                Criar conta
-              </Link>
-            </li>
-            <li>
-              <Link href={ROUTES.login} className="hover:text-foreground">
-                Entrar
-              </Link>
-            </li>
-            <li>
-              <a href="https://pagador.ao/termos" className="hover:text-foreground">
-                Termos de utilização
-              </a>
-            </li>
-            <li>
-              <a href="https://pagador.ao/privacidade" className="hover:text-foreground">
-                Política de privacidade
-              </a>
-            </li>
-          </ul>
-        </nav>
+        {columns.map((column) => (
+          <nav key={column.title} aria-label={column.title}>
+            <h2 className="text-sm font-medium text-white">{column.title}</h2>
+            <ul className="mt-4 space-y-3 text-sm text-neutral-500">
+              {column.links.map((link) => (
+                <li key={link.href}>
+                  {link.external || link.href.startsWith("#") ? (
+                    <a href={link.href} className="transition-colors hover:text-white">
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link href={link.href} className="transition-colors hover:text-white">
+                      {link.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))}
       </div>
-      <div className="border-t">
-        <p className="mx-auto max-w-6xl px-4 py-6 text-xs text-muted-foreground sm:px-6">
-          © 2026 {APP_NAME} · Dados alojados em conformidade com a Lei n.º 22/11
-        </p>
+      <div className="mx-auto max-w-6xl px-4 pb-10 sm:px-6">
+        <Mono>
+          © 2026 {APP_NAME} · Dados tratados segundo a Lei n.º 22/11
+        </Mono>
       </div>
     </footer>
   );

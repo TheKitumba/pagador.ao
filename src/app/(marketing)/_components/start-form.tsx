@@ -5,13 +5,13 @@ import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/config/app";
 import { cn } from "@/lib/utils";
 
+import { glossyButton } from "./primitives";
+
 /** Starts sign-up from the landing page: the e-mail is carried to the registration form. */
-export function StartForm({ className, tone = "default" }: { className?: string; tone?: "default" | "inverted" }) {
+export function StartForm({ className }: { className?: string }) {
   const router = useRouter();
   const inputId = useId();
   const [email, setEmail] = useState("");
@@ -27,22 +27,19 @@ export function StartForm({ className, tone = "default" }: { className?: string;
       <label htmlFor={inputId} className="sr-only">
         E-mail profissional
       </label>
-      <Input
+      <input
         id={inputId}
         type="email"
         autoComplete="email"
         placeholder="nome@empresa.co.ao"
         value={email}
         onChange={(event) => setEmail(event.target.value)}
-        className={cn(
-          "h-11 flex-1",
-          tone === "inverted" ? "border-neutral-700 bg-neutral-900 text-neutral-100 placeholder:text-neutral-500 dark:bg-background" : "bg-card",
-        )}
+        className="h-11 w-full rounded-xl sm:flex-1 border border-white/10 bg-white/[0.04] px-4 text-base text-white placeholder:text-neutral-500 focus-visible:border-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 sm:text-sm"
       />
-      <Button type="submit" size="lg" className={cn("h-11 px-5", tone === "inverted" && "bg-white text-neutral-950 hover:bg-neutral-200")}>
+      <button type="submit" className={glossyButton}>
         Criar conta grátis
-        <HugeiconsIcon icon={ArrowRight01Icon} aria-hidden />
-      </Button>
+        <HugeiconsIcon icon={ArrowRight01Icon} className="size-4" aria-hidden />
+      </button>
     </form>
   );
 }
