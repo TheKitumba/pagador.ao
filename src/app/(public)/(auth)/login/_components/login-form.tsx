@@ -17,7 +17,7 @@ import { SmsSignInDialog, SsoSignInDialog } from "./alternative-sign-in";
 
 // Only same-site paths, so `?next=` cannot be used as an open redirect.
 function safeRedirectPath(next: string | null) {
-  return next?.startsWith("/") && !next.startsWith("//") ? next : ROUTES.home;
+  return next?.startsWith("/") && !next.startsWith("//") ? next : ROUTES.dashboard;
 }
 
 export function LoginForm() {

@@ -134,7 +134,7 @@ export function SsoSignInDialog() {
     const domain = email.split("@")[1];
     toastService.info("A redireccionar para o fornecedor de identidade", domain);
     setOpen(false);
-    router.push(ROUTES.home);
+    router.push(ROUTES.dashboard);
   };
 
   return (

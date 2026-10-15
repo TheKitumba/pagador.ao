@@ -7,6 +7,7 @@ export const CURRENCY = "AOA";
 
 export const ROUTES = {
   home: "/",
+  dashboard: "/dashboard",
   login: "/login",
   register: "/register",
 } as const;

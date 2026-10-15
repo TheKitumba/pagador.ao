@@ -53,7 +53,7 @@ export interface NavGroup {
 export const primaryNav: NavItem[] = [
   {
     title: "Início",
-    href: "/",
+    href: "/dashboard",
     icon: Home01Icon,
     description: "Resumo da empresa, prazos e tarefas pendentes",
     keywords: ["dashboard", "painel"],

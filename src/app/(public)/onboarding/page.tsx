@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { APP_NAME } from "@/config/app";
+import { APP_NAME, ROUTES } from "@/config/app";
 
 import { OnboardingWizard } from "./_components/onboarding-wizard";
 
@@ -17,7 +17,7 @@ export default function OnboardingPage() {
           </span>
           {APP_NAME}
         </span>
-        <Link href="/" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+        <Link href={ROUTES.dashboard} className="text-sm font-medium text-muted-foreground hover:text-foreground">
           Terminar mais tarde
         </Link>
       </header>

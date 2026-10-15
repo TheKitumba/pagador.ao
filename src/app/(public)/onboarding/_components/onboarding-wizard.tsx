@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { ROUTES } from "@/config/app";
 import { cn } from "@/lib/utils";
 
 const steps = [
@@ -49,7 +50,7 @@ export function OnboardingWizard() {
         <h1 className="mt-4 text-2xl font-semibold tracking-tight">Está tudo pronto</h1>
         <p className="mt-2 text-sm text-muted-foreground">A sua empresa está configurada. Pode processar a primeira folha quando quiser.</p>
         <Button asChild className="mt-6">
-          <Link href="/">Ir para o início</Link>
+          <Link href={ROUTES.dashboard}>Ir para o início</Link>
         </Button>
       </div>
     );

@@ -15,13 +15,13 @@ import { useRegisterMutation } from "@/queries/auth/mutation";
 import { companySizes, provinces, type RegisterFormValues, registerSchema } from "@/schemas/auth";
 import { toastService } from "@/services/toast.service";
 
-export function RegisterForm() {
+export function RegisterForm({ defaultEmail = "" }: { defaultEmail?: string }) {
   const router = useRouter();
   const register = useRegisterMutation();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { name: "", email: "", password: "", companyName: "", companyNif: "" },
+    defaultValues: { name: "", email: defaultEmail, password: "", companyName: "", companyNif: "" },
   });
 
   const onSubmit = ({ companyName, companyNif, companySize, province, acceptTerms: _accepted, ...owner }: RegisterFormValues) =>
