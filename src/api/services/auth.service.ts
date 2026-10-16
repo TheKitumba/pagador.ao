@@ -62,6 +62,12 @@ class AuthService {
     await http.post("/auth/2fa/enable", { code });
   }
 
+  /** Opens another company of the account; the API re-issues the session cookies. */
+  async switchCompany(companyId: string) {
+    const { data } = await http.post<SessionUser>("/auth/company", { companyId });
+    return data;
+  }
+
   async logout() {
     await http.post("/auth/logout");
   }

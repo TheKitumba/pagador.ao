@@ -46,14 +46,15 @@ import {
 } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ROLE_LABEL } from "@api/types/auth";
+import type { CompanySummary } from "@api/types/organization";
+import { canOpen } from "@/config/access";
 import { ROUTES } from "@/config/app";
 import { type NavItem } from "@/config/navigation";
 import { cn } from "@/lib/utils";
-import { companies } from "@/mocks/people";
 import { useSession } from "@/providers/session-provider";
-import { useLogoutMutation } from "@/queries/auth/mutation";
+import { useLogoutMutation, useSwitchCompanyMutation } from "@/queries/auth/mutation";
+import { useCompaniesQuery } from "@/queries/organization/query";
 import { toastService } from "@/services/toast.service";
-import { useActiveCompany } from "@/stores/company.store";
 import { useCommandMenu } from "@/stores/command-menu.store";
 
 import { useVisibleNav } from "./use-visible-nav";
@@ -144,46 +145,68 @@ function CompanyLogo({ name, className }: { name: string; className?: string }) 
   );
 }
 
-/** The logo is the company switcher (multi-company accounts). */
+/** The logo is the company switcher: the account's companies (GET /companies), switched via the API. */
 function CompanySwitcher() {
-  const { company, setCompany } = useActiveCompany();
+  const router = useRouter();
+  const user = useSession();
+  const companies = useCompaniesQuery();
+  const switchCompany = useSwitchCompanyMutation();
+  const current = companies.data?.find((company) => company.current);
+  const name = current?.tradeName ?? "Empresa";
+
+  const open = (company: CompanySummary) => {
+    if (company.current || switchCompany.isPending) return;
+    switchCompany.mutate(company.id, {
+      onSuccess: () => {
+        toastService.success("Empresa alterada", company.legalName);
+        // Server components and every page re-read the session for the new company.
+        router.refresh();
+      },
+      onError: toastService.apiError,
+    });
+  };
 
   return (
     <DropdownMenu>
       <Tooltip>
         <TooltipTrigger asChild>
           <DropdownMenuTrigger asChild>
-            <button type="button" aria-label={`Empresa: ${company.shortName}. Mudar de empresa`} className="shrink-0 rounded-xl outline-none ring-sidebar-ring focus-visible:ring-2">
-              <CompanyLogo name={company.shortName} />
+            <button
+              type="button"
+              aria-label={current ? `Empresa: ${name}. Mudar de empresa` : "Empresa"}
+              aria-busy={switchCompany.isPending}
+              className="shrink-0 rounded-xl outline-none ring-sidebar-ring focus-visible:ring-2"
+            >
+              <CompanyLogo name={name} className={cn(!current && "animate-pulse", switchCompany.isPending && "opacity-60")} />
             </button>
           </DropdownMenuTrigger>
         </TooltipTrigger>
-        <TooltipContent side="right">{company.shortName}</TooltipContent>
+        <TooltipContent side="right">{name}</TooltipContent>
       </Tooltip>
       <DropdownMenuContent align="start" className="w-72">
-        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Empresas do grupo</DropdownMenuLabel>
-        {companies.map((item) => (
-          <DropdownMenuItem
-            key={item.nif}
-            className="gap-3 py-2"
-            onSelect={() => {
-              if (item.nif === company.nif) return;
-              setCompany(item.nif);
-              toastService.success("Empresa alterada", item.name);
-            }}
-          >
-            <CompanyLogo name={item.shortName} className="size-7 rounded-lg text-xs" />
+        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+          {(companies.data?.length ?? 0) > 1 ? "Empresas da conta" : "Empresa"}
+        </DropdownMenuLabel>
+        {companies.isPending && <p className="px-2 py-3 text-sm text-muted-foreground">A carregar…</p>}
+        {companies.isError && <p className="px-2 py-3 text-sm text-destructive">Não foi possível carregar as empresas.</p>}
+        {companies.data?.map((company) => (
+          <DropdownMenuItem key={company.id} className="gap-3 py-2" disabled={switchCompany.isPending && !company.current} onSelect={() => open(company)}>
+            <CompanyLogo name={company.tradeName} className="size-7 rounded-lg text-xs" />
             <span className="min-w-0 flex-1">
-              <span className="block truncate font-medium">{item.name}</span>
-              <span className="block text-xs text-muted-foreground">NIF {item.nif}</span>
+              <span className="block truncate font-medium">{company.legalName}</span>
+              <span className="block text-xs text-muted-foreground">NIF {company.nif}</span>
             </span>
-            {item.nif === company.nif && <HugeiconsIcon icon={Tick02Icon} className="size-4 text-primary" aria-label="Empresa actual" />}
+            {company.current && <HugeiconsIcon icon={Tick02Icon} className="size-4 text-primary" aria-label="Empresa actual" />}
           </DropdownMenuItem>
         ))}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/settings?tab=company">Configurar empresa</Link>
-        </DropdownMenuItem>
+        {canOpen(user.permissions, "/settings") && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/settings?tab=company">Configurar empresa</Link>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

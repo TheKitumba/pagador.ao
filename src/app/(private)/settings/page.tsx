@@ -7,15 +7,11 @@ import { PageBody, PageHeader, PageTabPanel, PageTabs } from "@/components/commo
 import { PersonCell } from "@/components/common/person-avatar";
 import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { company, establishments } from "@/mocks/people";
-
-import { FormDialog } from "@/components/common/form-dialog";
-import { forms } from "@/config/forms";
+import { company } from "@/mocks/people";
 
 import { AccessDialog, roles } from "./_components/access-dialog";
-import { SaveForm, ToggleRow, WorkflowSheet } from "./_components/settings-controls";
+import { CompanySettings } from "./_components/company-settings";
+import { ToggleRow, WorkflowSheet } from "./_components/settings-controls";
 
 export const metadata: Metadata = { title: "Configurações" };
 
@@ -46,20 +42,6 @@ const workflows = [
   { request: "Cessação de contrato", flow: "Gestor de RH → Direcção" },
 ];
 
-function Field({ id, label, defaultValue, type = "text", hint }: { id: string; label: string; defaultValue: string; type?: string; hint?: string }) {
-  return (
-    <div className="space-y-1.5">
-      <Label htmlFor={id}>{label}</Label>
-      <Input id={id} type={type} defaultValue={defaultValue} aria-describedby={hint ? `${id}-hint` : undefined} />
-      {hint && (
-        <p id={`${id}-hint`} className="text-xs text-muted-foreground">
-          {hint}
-        </p>
-      )}
-    </div>
-  );
-}
-
 export default function SettingsPage() {
   return (
     <>
@@ -77,38 +59,7 @@ export default function SettingsPage() {
       >
         <PageBody className="max-w-5xl">
           <PageTabPanel value="company" className="space-y-6">
-            <SectionCard title="Dados da entidade empregadora" description="Aparecem nos recibos, contratos e mapas fiscais">
-              <SaveForm successTitle="Dados da empresa guardados" className="grid gap-4 sm:grid-cols-2">
-                <Field id="company-name" label="Denominação social" defaultValue={company.name} />
-                <Field id="company-nif" label="NIF" defaultValue={company.nif} />
-                <Field id="company-inss" label="N.º de contribuinte do INSS" defaultValue="0012 4478 90" />
-                <Field id="company-cae" label="CAE (actividade)" defaultValue="52100 — Armazenagem" />
-                <div className="sm:col-span-2">
-                  <Field id="company-address" label="Sede" defaultValue="Rua do Talatona, Edifício Kianda, Luanda" />
-                </div>
-                <div className="flex justify-end sm:col-span-2">
-                  <Button type="submit">Guardar alterações</Button>
-                </div>
-              </SaveForm>
-            </SectionCard>
-            <SectionCard title="Estabelecimentos" description="Usados na assiduidade, nos centros de custo e nos relatórios" contentClassName="px-2 pb-2">
-              <ul className="divide-y">
-                {establishments.map((site) => (
-                  <li key={site} className="flex items-center justify-between px-3 py-3 text-sm">
-                    <span className="font-medium">{site}</span>
-                    <FormDialog
-                      {...forms.establishment}
-                      fields={forms.establishment.fields.map((field) => (field.name === "name" ? { ...field, defaultValue: site } : field))}
-                      trigger={
-                        <Button variant="ghost" size="sm">
-                          Editar<span className="sr-only"> {site}</span>
-                        </Button>
-                      }
-                    />
-                  </li>
-                ))}
-              </ul>
-            </SectionCard>
+            <CompanySettings />
           </PageTabPanel>
 
           <PageTabPanel value="users" className="space-y-4">

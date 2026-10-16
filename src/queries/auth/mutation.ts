@@ -79,6 +79,17 @@ export function useEnableTwoFactorMutation() {
   });
 }
 
+/** Every cached query belongs to the previous company, so the cache starts over with the new session. */
+export function useSwitchCompanyMutation() {
+  return useMutation({
+    mutationFn: (companyId: string) => authService.switchCompany(companyId),
+    onSuccess: (user) => {
+      queryClient.clear();
+      queryClient.setQueryData(authKeys.session(), user);
+    },
+  });
+}
+
 export function useLogoutMutation() {
   return useMutation({
     mutationFn: () => authService.logout(),
