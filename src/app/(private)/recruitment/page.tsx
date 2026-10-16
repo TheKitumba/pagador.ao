@@ -8,12 +8,12 @@ import { PageBody, PageHeader, PageTabPanel, PageTabs } from "@/components/commo
 import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
-import { candidates, jobOpenings, pipelineStages } from "@/mocks/people";
+import { candidates, jobOpenings } from "@/mocks/people";
 import { FormDialog } from "@/components/common/form-dialog";
 import { HeaderButton } from "@/components/common/header-button";
 import { forms } from "@/config/forms";
 
-import { CandidateCard } from "./_components/candidate-card";
+import { CandidateBoard } from "./_components/candidate-board";
 
 export const metadata: Metadata = { title: "Recrutamento" };
 
@@ -44,29 +44,7 @@ export default function RecruitmentPage() {
       >
         <PageBody className="max-w-none">
           <PageTabPanel value="pipeline">
-            <div className="-mx-4 overflow-x-auto px-4 pb-2 md:-mx-6 md:px-6" role="region" aria-label="Quadro de candidatos por fase" tabIndex={0}>
-              <ol className="flex min-w-max gap-4" aria-label="Fases do processo de recrutamento">
-                {pipelineStages.map((stage) => {
-                  const items = candidates.filter((candidate) => candidate.stage === stage);
-                  return (
-                    <li key={stage} className="flex w-72 flex-col rounded-xl border bg-muted/40 p-2">
-                      <h2 className="flex items-center justify-between px-2 py-1.5 text-sm font-semibold">
-                        {stage}
-                        <span className="tabular text-xs font-normal text-muted-foreground">{items.length}</span>
-                      </h2>
-                      <ul className="mt-1 space-y-2">
-                        {items.map((candidate) => (
-                          <li key={candidate.name}>
-                            <CandidateCard candidate={candidate} />
-                          </li>
-                        ))}
-                        {items.length === 0 && <li className="rounded-lg border border-dashed px-3 py-6 text-center text-xs text-muted-foreground">Sem candidatos</li>}
-                      </ul>
-                    </li>
-                  );
-                })}
-              </ol>
-            </div>
+            <CandidateBoard initialCandidates={candidates} />
           </PageTabPanel>
           <PageTabPanel value="jobs">
             <DataTable

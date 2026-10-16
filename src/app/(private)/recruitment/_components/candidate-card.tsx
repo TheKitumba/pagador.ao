@@ -3,7 +3,6 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Calendar03Icon, Download04Icon, StarIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
-import { useState } from "react";
 
 import { DescriptionList } from "@/components/common/cards";
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
@@ -13,13 +12,13 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { downloadFile } from "@/lib/download";
 import { formatDate } from "@/lib/format";
 import { pipelineStages } from "@/mocks/people";
-import { toastService } from "@/services/toast.service";
+import { cn } from "@/lib/utils";
 
-interface Candidate {
+export interface Candidate {
   name: string;
   job: string;
   stage: string;
@@ -37,26 +36,46 @@ function Stars({ score }: { score: number }) {
   );
 }
 
-/** Kanban card that opens the candidate in a side sheet. */
-export function CandidateCard({ candidate }: { candidate: Candidate }) {
-  const [stage, setStage] = useState(candidate.stage);
+/** What a candidate looks like on the board (also the card under the pointer while dragging). */
+export function CandidateCardFace({ candidate, className }: { candidate: Candidate; className?: string }) {
+  return (
+    <div className={cn("w-full rounded-lg border bg-card p-3 text-left shadow-card", className)}>
+      <span className="flex items-center gap-2.5">
+        <PersonAvatar name={candidate.name} />
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-medium">{candidate.name}</span>
+          <span className="block truncate text-xs text-muted-foreground">{candidate.job}</span>
+        </span>
+      </span>
+      <span className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+        <Stars score={candidate.score} />
+        {formatDate(candidate.appliedAt)}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * The candidate's details, opened from the board. The board owns the stage: moving here (select or
+ * "Avançar fase") goes through `onMove`, the same path as dragging the card.
+ */
+export function CandidateSheet({
+  candidate,
+  open,
+  onOpenChange,
+  onMove,
+}: {
+  candidate: Candidate | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onMove: (stage: string) => void;
+}) {
+  if (!candidate) return null;
+  const stage = candidate.stage;
   const email = `${candidate.name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, ".")}@gmail.com`;
 
   return (
-    <Sheet>
-      <SheetTrigger className="w-full rounded-lg border bg-card p-3 text-left shadow-card transition-colors hover:border-foreground/15">
-        <span className="flex items-center gap-2.5">
-          <PersonAvatar name={candidate.name} />
-          <span className="min-w-0">
-            <span className="block truncate text-sm font-medium">{candidate.name}</span>
-            <span className="block truncate text-xs text-muted-foreground">{candidate.job}</span>
-          </span>
-        </span>
-        <span className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-          <Stars score={candidate.score} />
-          {formatDate(candidate.appliedAt)}
-        </span>
-      </SheetTrigger>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
         <SheetHeader className="border-b px-6 py-5 text-left">
           <div className="flex items-center gap-3">
@@ -80,10 +99,7 @@ export function CandidateCard({ candidate }: { candidate: Candidate }) {
             <Label htmlFor={`stage-${candidate.name}`}>Mover para</Label>
             <Select
               value={stage}
-              onValueChange={(next) => {
-                setStage(next);
-                toastService.success("Candidato movido", `${candidate.name} → ${next}`);
-              }}
+              onValueChange={(next) => next && next !== stage && onMove(next)}
             >
               <SelectTrigger id={`stage-${candidate.name}`}>
                 <SelectValue />
@@ -145,8 +161,7 @@ export function CandidateCard({ candidate }: { candidate: Candidate }) {
             <Button
               onClick={() => {
                 const next = pipelineStages[Math.min(pipelineStages.indexOf(stage as (typeof pipelineStages)[number]) + 1, pipelineStages.length - 1)];
-                setStage(next);
-                toastService.success("Candidato avançou", `${candidate.name} → ${next}`);
+                onMove(next);
               }}
             >
               Avançar fase
